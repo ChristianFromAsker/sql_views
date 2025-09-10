@@ -107,8 +107,8 @@ LEFT JOIN
 	stella_common.entities_t bh 
 	ON d.budget_home_id = bh.entity_id
 LEFT JOIN 
-stella_common.jurisdictions_t br 
-ON bh.budget_region_id = br.jurisdiction_id
+	stella_common.jurisdictions_t br 
+	ON bh.budget_region_id = br.jurisdiction_id
 LEFT JOIN 
 stella_common.menu_list_t ds 
 ON d.deal_status_id = ds.menu_id
@@ -147,3 +147,4 @@ GROUP BY kw.deal_id__deals_t
 ) tags ON tags.deal_id = d.deal_id
 
 WHERE d.is_deleted = 0
+
