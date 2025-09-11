@@ -10,6 +10,7 @@ d.deal_id
 , d.budget_home_id
 , br.jurisdiction 			budget_region
 
+, d.comments
 , d.create_date
 
 , d.deal_name
@@ -20,12 +21,21 @@ d.deal_id
 , d.inception_date
 	
 , d.nbi_prepper 	nbi_prepper_id
-	
+, IF(
+	d.quote_due_time IS NULL
+, DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
+, CONCAT(DATE_FORMAT(d. quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)  
+) nbi_deadline_us
+
 , pox.menu_item 	primary_or_xs
 , d.primary_or_xs_id
 , d.primary_uw 		primary_uw_id
 , uw.uw_initials 	primary_uw_initials
+, d.program_summary
+	
+, d.quote_due_time
 
+, d.re_quote_info
 , risk_type.risk_type_name 		risk_type
 , d.risk_type_id
 , rtm.risk_type_name 	risk_type_major
@@ -41,17 +51,6 @@ d.deal_id
 , uc.personal_name 		uw_counsel_person_1
 , d.was_quoted_id
 
-
-
-, d.quote_due_time
-, IF(
-	d.quote_due_time IS NULL
-, DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
-, CONCAT(DATE_FORMAT(d. quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)  
-) nbi_deadline_us
-
-, d.program_summary
-, d.comments
 , d.submission_notes
 , d.deal_info
 , qd.menu_item was_quoted
@@ -151,4 +150,5 @@ GROUP BY kw.deal_id__deals_t
 ) tags ON tags.deal_id = d.deal_id
 
 WHERE d.is_deleted = 0
+
 
