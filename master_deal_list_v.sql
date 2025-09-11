@@ -17,6 +17,10 @@ d.deal_id
 , d.deal_status_id
 , ds.menu_item_us 		deal_status_us 
 
+, d.inception_date
+	
+, d.nbi_prepper 	nbi_prepper_id
+	
 , pox.menu_item 	primary_or_xs
 , d.primary_or_xs_id
 , d.primary_uw 		primary_uw_id
@@ -27,18 +31,18 @@ d.deal_id
 , rtm.risk_type_name 	risk_type_major
 , rtm.risk_type_id 		risk_type_major_id
 
+, d.secondary_uw 	second_uw_id
+, suw.uw_initials 	second_uw_initials
 , d.spa_law
 , stage.menu_item 		stage
+, d.submission_date
 
-, d.secondary_uw second_uw_id
-, suw.uw_initials second_uw_initials
-, d.nbi_prepper nbi_prepper_id
-, d.UwCounselPerson1 uw_counsel_person_1_id
-, uc.personal_name uw_counsel_person_1
+, d.UwCounselPerson1 	uw_counsel_person_1_id
+, uc.personal_name 		uw_counsel_person_1
 , d.was_quoted_id
 
-, d.inception_date
-, d.submission_date
+
+
 , d.quote_due_time
 , IF(
 	d.quote_due_time IS NULL
@@ -147,3 +151,4 @@ GROUP BY kw.deal_id__deals_t
 ) tags ON tags.deal_id = d.deal_id
 
 WHERE d.is_deleted = 0
+
