@@ -1,100 +1,109 @@
 CREATE VIEW master_deal_list_v AS
-SELECT 
-d.deal_id
+SELECT
+    d.deal_id
 
-, bf.business_name 	broker_firm
-, d.broker_firm_id
-, bp.PersonalName 		broker_person
-, d.broker_person 		broker_person_id
-, bh.entity_business_name 		budget_home
-, d.budget_home_id
-, br.jurisdiction 			budget_region
+    , bf.business_name 	broker_firm
+    , d.broker_firm_id
+    , bp.PersonalName 		broker_person
+    , d.broker_person 		broker_person_id
+    , bh.entity_business_name 		budget_home
+    , d.budget_home_id
+    , d.BuyerDomicile
+    , d.buyer_business_name
+    , d.buyer_law_firm_1_id
+    , blf1.FirmName     buyer_law_firm_1
+    , d.buyer_law_firm_2_id
+    , blf2.FirmName     buyer_law_firm_2
+    , br.jurisdiction 			budget_region
 
-, d.comments
-, d.create_date
+    , d.comments
+    , d.create_date
+    , d.currency_rate_deal
+    , d.currency_rate_local
 
-, d.deal_name
-, ds.menu_item 	deal_status
-, d.deal_status_id
-, ds.menu_item_us 		deal_status_us 
+    , d.deal_currency
+    , d.deal_info
+    , d.deal_name
+    , ds.menu_item 	    deal_status
+    , d.deal_status_id
+    , ds.menu_item_us 		deal_status_us
+    , tags.deal_tags
+    , d.drop_end
+    , d.drop_period
 
-, d.inception_date
-	
-, d.nbi_prepper 	nbi_prepper_id
-, IF(
-	d.quote_due_time IS NULL
-, DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
-, CONCAT(DATE_FORMAT(d. quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)  
-) nbi_deadline_us
+    , d.ev
+    , CAST(ev / d.currency_rate_deal AS DECIMAL(14,0)) ev_eur
+    , CAST(ev / d.currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) ev_usd
 
-, pox.menu_item 	primary_or_xs
-, d.primary_or_xs_id
-, d.primary_uw 		primary_uw_id
-, uw.uw_initials 	primary_uw_initials
-, d.program_summary
-	
-, d.quote_due_time
+    , d.inception_date
+    , d.insured_legal_name
+    , irc.Jurisdiction      insured_registered_country
+    , d.insured_registered_country_id
 
-, d.re_quote_info
-, risk_type.risk_type_name 		risk_type
-, d.risk_type_id
-, rtm.risk_type_name 	risk_type_major
-, rtm.risk_type_id 		risk_type_major_id
+    , d.max_limit_quoted
 
-, d.secondary_uw 	second_uw_id
-, suw.uw_initials 	second_uw_initials
-, d.spa_law
-, stage.menu_item 		stage
-, d.submission_date
+    , d.nbi_prepper 	nbi_prepper_id
+    , IF(
+        d.quote_due_time IS NULL
+    , DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
+    , CONCAT(DATE_FORMAT(d. quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)
+    ) nbi_deadline_us
 
-, d.UwCounselPerson1 	uw_counsel_person_1_id
-, uc.personal_name 		uw_counsel_person_1
-, d.was_quoted_id
+    , pox.menu_item 	primary_or_xs
+    , d.primary_or_xs_id
+    , d.primary_uw 		primary_uw_id
+    , uw.uw_initials 	primary_uw_initials
+    , d.program_limit
+    , d.program_summary
 
-, d.submission_notes
-, d.deal_info
-, qd.menu_item was_quoted
+    , d.quote_due_time
 
-, d.target_business_name
-, d.target_legal_name
-, d.target_super_sector_id
-, d.target_sub_sector_id, sup_s.sector_name target_super_sector, sub_s.sector_name target_sub_sector
-, tlj.jurisdiction target_legal_jurisdiction
-, d.target_desc
+    , d.re_quote_info
+    , d.retention
+    , risk_type.risk_type_name 		risk_type
+    , d.risk_type_id
+    , rtm.risk_type_name 	risk_type_major
+    , rtm.risk_type_id 		risk_type_major_id
 
-, d.buyer_business_name
-, d.insured_legal_name, d.UltimateBuyer
-, BuyerDomicile, d.insured_registered_country_id, irc.Jurisdiction insured_registered_country
-, d.seller_business_name, d.UltimateSeller
-, d.SellerLegalFirm seller_law_firm_id
-, d.buyer_law_firm_1_id
-, d.buyer_law_firm_2_id
-, slf.FirmName seller_law_firm
-, blf1.FirmName buyer_law_firm_1
-, blf2.FirmName buyer_law_firm_2
+    , d.secondary_uw 	second_uw_id
+    , suw.uw_initials 	second_uw_initials
+    , d.spa_law
+    , stage.menu_item 		stage
+    , d.submission_date
 
-, d.uw_fee_amount
-, d.signing_invoice_amount
-, d.initial_premium_received
-, d.PremiumReceived premium_received
+    , d.seller_business_name
+    , slf.FirmName          seller_law_firm
+    , d.SellerLegalFirm     seller_law_firm_id
+    , d.submission_notes
 
-, d.currency_rate_deal
-, d.currency_rate_local
-, d.deal_currency
-, d.drop_end
-, d.drop_period
-, d.retention
+    , d.target_business_name
+    , d.target_desc
+    , d.target_legal_name
+    , tlj.jurisdiction      target_legal_jurisdiction
+    , sup_s.sector_name     target_super_sector
+    , d.target_sub_sector_id
+    , sub_s.sector_name     target_sub_sector
+    , d.target_super_sector_id
+
+    , d.UltimateBuyer
+    , d.UltimateSeller
+    , d.UwCounselPerson1 	uw_counsel_person_1_id
+    , uc.personal_name 		uw_counsel_person_1
+    , d.uw_fee_amount
+
+    , qd.menu_item      was_quoted
+    , d.was_quoted_id
+
+    -- Finance related data fields that shall be removed
+     , d.initial_premium_received
+     , d.PremiumReceived    premium_received
+     , d.signing_invoice_amount
+
 , CAST(d.retention / d.currency_rate_deal AS DECIMAL(14,0)) retention_eur
-, d.max_limit_quoted
-, d.program_limit
 
 , d.total_rp_premium_on_deal
 , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal AS DECIMAL(14,0)) total_rp_premium_on_deal_eur
 , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) total_rp_premium_on_deal_usd
-
-, d.ev
-, CAST(ev / d.currency_rate_deal AS DECIMAL(14,0)) ev_eur
-, CAST(ev / d.currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) ev_usd
 
 , d.total_rp_limit_on_deal
 , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal AS DECIMAL(14,0)) total_rp_limit_on_deal_eur
@@ -102,8 +111,6 @@ d.deal_id
 
 , d.lowest_rp_attpoint
 , CAST(lowest_rp_attpoint / currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
-
-, tags.deal_tags
 
 FROM deals_t d
 LEFT JOIN 
