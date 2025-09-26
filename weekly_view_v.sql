@@ -37,6 +37,7 @@ SELECT
 
     , d.is_repeat_buyer
 
+    , d.max_limit_quoted
     , CONCAT(
         d.quote_due_date, ' (' , dayname(d.quote_due_date), ') ', IFNULL(d.quote_due_time, '')
     ) nbi_deadline
