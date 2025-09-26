@@ -36,7 +36,7 @@ SELECT
     , CONCAT(ROUND(CAST(d.ev / d.currency_rate_deal * d.currency_rate_local AS DECIMAL(14,0))/1000000,0), 'M')  	ev_local
 
     , d.is_repeat_buyer
-     
+
     , CONCAT(
         d.quote_due_date, ' (' , dayname(d.quote_due_date), ') ', IFNULL(d.quote_due_time, '')
     ) nbi_deadline
