@@ -2,70 +2,93 @@ CREATE VIEW deals_v AS
 SELECT
     d.deal_id
 
+    , analyst.uw_name analyst_full_name
     , d.analyst_id
+
     , bf.business_name broker_firm
     , d.broker_firm_id
     , d.broker_person
+    , bh.entity_business_name budget_home
     , d.budget_home_id
+    , br.jurisdiction budget_region
+    , bh.budget_region_id
 
+    , d.closing_date
     , d.Comments
+    , cu.uw_name        creating_uw_full_name
+    , cu.uw_initials    creating_uw_initials
+    , d.create_date
+    , d.creating_uw     creating_uw_id
+    , d.currency_date
+    , d.currency_rate_deal
+    , d.currency_rate_local
+
 
     , d.deal_name
     , d.deal_status_id
     , ds.menu_item deal_status
+    , d.deal_status_id AS status -- remove when stella claims US is updated
+
+    , d.EV
 
     , d.is_locked
+    , d.is_repeat_buyer
+
+    , nbi_prepper.uw_name nbi_prepper_full_name
+    , d.nbi_prepper nbi_prepper_id
 
     , d.policy_period_in_months
     , d.primary_or_xs_id
     , pox.menu_item primary_or_xs
+    , d.primary_uw primary_uw_id
+    , uw.uw_name primary_uw_full_name
+    , uw.uw_initials primary_uw_initials
     , d.program_summary
 
+    , d.quote_due_date
+
+    , d.re_quote_info
     , rf.menu_item risk_feel
     , d.risk_feel_id
-
     , risk_type.risk_type_name risk_type
     , d.risk_type_id
 
+    , suw.uw_name second_uw_full_name
+    , d.secondary_uw second_uw_id
+    , suw.uw_initials second_uw_initials
     , d.spa_law
-
-    , d.vat_home
-
-    , bh.entity_business_name budget_home
-    , bh.budget_region_id
-    , br.jurisdiction budget_region
-
-    , d.primary_uw
-    , uw.uw_initials uw_initials_hr
-    , uw.uw_initials primary_uw_hr
-    , uw.uw_name primary_uw_full_name
-    , d.secondary_uw
-    , suw.uw_name secondary_uw_full_name
-    , suw.uw_initials secondary_uw_hr
-    , d.creating_uw
-    , cu.uw_name creating_uw_hr
-    , d.nbi_prepper
-    , nbi_prepper.uw_name nbi_prepper_hr
-
-    , d.UwCounselPerson1, d.UwCounselPerson2
-    , uc.personal_name uw_counsel_person_1_hr
-
-    , d.primary_insurer
-    , ins.insurer_business_name primary_insurer_hr
-
-    , d.inception_date, d.create_date, d.spa_signing_date, d.closing_date
-    , d.submission_date
+    , d.submission_limits
+    , d.submission_notes
 
     , d.target_legal_name
     , d.TargetDomicile
     , d.target_business_name
-    , d.target_super_sector_id
+    , d.target_desc
     , sup_s.sector_name target_super_sector
+    , d.target_super_sector_id
     , d.target_sub_sector_id
     , sub_s.sector_name target_sub_sector
     , tlj.jurisdiction target_legal_jurisdiction
     , d.target_main_jurisdiction_id
     , tmj.jurisdiction target_main_jurisdiction
+
+    , d.uw_progress
+    , d.uw_progress_latest_change
+
+    , d.vat_home
+
+
+    , d.UwCounselPerson1
+    , d.UwCounselPerson2
+    , uc.personal_name uw_counsel_person_1_hr
+
+    , d.primary_insurer
+    , ins.insurer_business_name primary_insurer_hr
+
+    , d.inception_date
+    , d.spa_signing_date
+
+    , d.submission_date
 
     , d.insured_legal_name
     , d.insured_registered_country_id
@@ -75,29 +98,33 @@ SELECT
     , d.UltimateBuyer
     , d.BuyerDomicile
     , d.buyer_financial_firm_id
-    , d.buyer_law_firm_1_id, d.buyer_law_firm_2_id
+    , d.buyer_law_firm_1_id
+    , d.buyer_law_firm_2_id
 
     , d.seller_business_name
     , d.UltimateSeller
     , d.SellerDomicile
     , d.SellerLegalFirm
 
-    , d.IsClosed, d.ClosingBooked, d.CounselInvoiceReceived
-    , d.CounselInvoiceHandled, d.VDRReceived, d.VDRPassword
+    , d.IsClosed
+    , d.ClosingBooked
+    , d.CounselInvoiceReceived
+    , d.CounselInvoiceHandled
+    , d.VDRReceived
+    , d.VDRPassword
     , d.PremiumReceived
 
-    , d.currency_rate_deal
-    , d.currency_rate_local
-    , d.currency_date
+
     , d.deal_currency
     , d.program_limit
-    , d.lowest_rp_attpoint, d.EV, d.retention
+    , d.lowest_rp_attpoint
+    , d.retention
 
     , d.uw_fee_amount
     , d.counsel_fee_amount
 
     , d.total_rp_limit_on_deal
-     , d.total_rp_premium_on_deal
+    , d.total_rp_premium_on_deal
     , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal * d.currency_rate_local AS DECIMAL(14,0)) total_rp_premium_on_deal_local
     , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal AS DECIMAL(14,0)) total_rp_premium_on_deal_eur
     , CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0)) ev_eur
@@ -115,12 +142,15 @@ SELECT
     , d.are_emails_filed_id
     , d.is_uw_fee_received_id
     , d.is_underwritten
-    , d.quote_due_date
 
-    , wq.menu_item was_quoted,
-    d.was_quoted_id
+    , wq.menu_item was_quoted
+    , d.was_quoted_id
 
-FROM deals_t d
+FROM
+    deals_t d
+LEFT JOIN
+    stella_common.underwriters_t analyst
+    ON d.analyst_id = analyst.uw_id
 LEFT JOIN
     stella_common.entities_t bh
     ON d.budget_home_id = bh.entity_id
