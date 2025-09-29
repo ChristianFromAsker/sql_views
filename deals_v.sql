@@ -2,30 +2,35 @@ CREATE VIEW deals_v AS
 SELECT
     d.deal_id
 
-     , bf.business_name broker_firm
+    , d.analyst_id
+    , bf.business_name broker_firm
     , d.broker_firm_id
     , d.broker_person
+    , d.budget_home_id
 
-     , d.deal_name
+    , d.Comments
+
+    , d.deal_name
     , d.deal_status_id
     , ds.menu_item deal_status
 
-    , d.spa_law
-    , d.risk_feel_id
-    , rf.menu_item risk_feel
+    , d.is_locked
+
     , d.policy_period_in_months
     , d.primary_or_xs_id
     , pox.menu_item primary_or_xs
-    , d.risk_type_id
-    , risk_type.risk_type_name risk_type
-
-    , d.is_locked
-    , d.MessageBoard
-    , d.Comments
     , d.program_summary
 
-    , vat_home
-    , d.budget_home_id
+    , rf.menu_item risk_feel
+    , d.risk_feel_id
+
+    , risk_type.risk_type_name risk_type
+    , d.risk_type_id
+
+    , d.spa_law
+
+    , d.vat_home
+
     , bh.entity_business_name budget_home
     , bh.budget_region_id
     , br.jurisdiction budget_region
@@ -91,7 +96,8 @@ SELECT
     , d.uw_fee_amount
     , d.counsel_fee_amount
 
-    , d.total_rp_limit_on_deal, d.total_rp_premium_on_deal
+    , d.total_rp_limit_on_deal
+     , d.total_rp_premium_on_deal
     , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal * d.currency_rate_local AS DECIMAL(14,0)) total_rp_premium_on_deal_local
     , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal AS DECIMAL(14,0)) total_rp_premium_on_deal_eur
     , CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0)) ev_eur
@@ -113,9 +119,6 @@ SELECT
 
     , wq.menu_item was_quoted,
     d.was_quoted_id
-
-
-    , IF(d.inception_date IS NOT NULL, d.inception_date, d.create_date) pivot_date
 
 FROM deals_t d
 LEFT JOIN
