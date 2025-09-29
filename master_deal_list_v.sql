@@ -1,3 +1,4 @@
+-- comment
 CREATE VIEW master_deal_list_v AS
 SELECT
     d.deal_id
@@ -157,5 +158,6 @@ GROUP BY kw.deal_id__deals_t
 ) tags ON tags.deal_id = d.deal_id
 
 WHERE d.is_deleted = 0
+
 
 
