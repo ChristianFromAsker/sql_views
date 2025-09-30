@@ -35,6 +35,7 @@ SELECT
     , d.is_repeat_buyer
 
     , nbi_prepper.uw_name nbi_prepper_full_name
+    , nbi_prepper.uw_name nbi_prepper_hr -- needed by CM. To be deleted once fixed.
     , d.nbi_prepper nbi_prepper_id
 
     , d.policy_period_in_months
@@ -54,6 +55,7 @@ SELECT
     , d.risk_type_id
 
     , suw.uw_name second_uw_full_name
+    , suw.uw_name secondary_uw_full_name -- needed by CM. To be deleted once fixed.
     , d.secondary_uw second_uw_id
     , suw.uw_initials second_uw_initials
     , d.spa_law
