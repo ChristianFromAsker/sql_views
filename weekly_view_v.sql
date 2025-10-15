@@ -2,6 +2,7 @@ CREATE VIEW weekly_view_v AS
 SELECT
     d.deal_id
 
+    , d.aim_for_xs
     , d.analyst_id
     , analyst.uw_name analyst_full_name
 
@@ -32,7 +33,9 @@ SELECT
 
     , d.deal_status_id 	status_id
     , ds.menu_item 	    deal_status
+     , IF(d.aim_for_xs = 'yes',CONCAT(ds.menu_item, ' - aim for xs' ), ds.menu_item_us) deal_status_xs
     , ds.menu_item_us 	deal_status_us
+    , IF(d.aim_for_xs = 'yes',CONCAT(ds.menu_item_us, ' - aim for xs' ), ds.menu_item_us) deal_status_us_xs
 
     , CONCAT(d.deal_currency, ' ', ROUND(CAST(d.ev AS DECIMAL(14,0))/1000000,0), 'M')  	ev_deal
     , CONCAT(ROUND(CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0))/1000000,0), 'M')  	ev_eur
