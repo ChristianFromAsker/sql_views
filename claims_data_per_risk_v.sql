@@ -7,6 +7,7 @@ SELECT
     , c.claim_notice_date ClaimDate
     , c.claim_closed_date
     , c.claim_closed_date ClaimClosedDate
+    , FORMAT(c.claimed_loss / c.fx_rate_claim,0) claimed_amount_eur
     , c.comments
     , c.claim_currency
     , d.currency_rate_deal
@@ -17,21 +18,30 @@ SELECT
     , d.drop_end
     , d.drop_period
 
+    , FORMAT(c.estimated_loss / c.fx_rate_claim,0) estimated_loss_eur
     , d.ev
     , FORMAT(d.ev / d.currency_rate_deal, 0) AS ev_eur
     , FORMAT(d.ev / c.fx_rate_usd, 0) AS ev_usd
+
+    , FORMAT(c.final_loss / c.fx_rate_claim,0) final_loss_eur
+
     , d.inception_date
     , irj.jurisdiction insured_registered_country
     , d.insured_registered_country_id
+    , c.internal_advisor_fees
+
     , d.lowest_rp_attpoint
-    , d.lowest_rp_attpoint / d.currency_rate_deal lowest_rp_attpoint_eur
+    , CAST(d.lowest_rp_attpoint / d.currency_rate_deal AS DECIMAL(18,0)) lowest_rp_attpoint_eur
+
+    , pox.menu_item primary_or_xs
     , d.program_summary
 
     , c.relevant_exclusion_3
     , c.relevant_exclusion_4
     , d.retention
     , FORMAT(d.retention / d.currency_rate_deal,0) AS retention_eur
-
+    , rc. menu_item risk_consequence
+    , c.risk_consequence risk_consequence_id
     , d.spa_law
 
     , d.target_desc
@@ -42,12 +52,11 @@ SELECT
     , d.target_super_sector_id
     , t_sup.sector_name target_super_sector
     , d.total_rp_limit_on_deal
-    , d.total_rp_limit_on_deal / d.currency_rate_deal total_rp_limit_on_deal_eur
+    , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal AS DECIMAL(18,0)) total_rp_limit_on_deal_eur
     , d.total_rp_premium_on_deal
     , d.total_rp_premium_on_deal / d.currency_rate_deal total_rp_premium_on_deal_eur
 
 , d.target_business_name
-
 
 , FORMAT(c.internal_advisor_fees / c.fx_rate_usd,0) internal_advisor_fees_usd
 , FORMAT(d.total_rp_limit_on_deal / c.fx_rate_usd,0) AS total_rp_limit_on_deal_usd
@@ -82,6 +91,9 @@ LEFT JOIN
 LEFT JOIN
     stella_common.jurisdictions_t irj
     ON d.insured_registered_country_id = irj.jurisdiction_id
+LEFT JOIN
+    stella_common.menu_list_t pox
+    ON d.primary_or_xs_id = pox.menu_id
 LEFT JOIN
     stella_common.sectors_t t_sub
     ON d.target_sub_sector_id = t_sub.sector_id

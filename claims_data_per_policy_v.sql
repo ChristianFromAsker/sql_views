@@ -105,33 +105,47 @@ LEFT JOIN
 LEFT JOIN
     stella_common.menu_list_t AS cc2
     ON c.claim_category_2_client = cc2.menu_id
-LEFT JOIN stella_common.menu_list_t AS cc3 ON c.claim_category_3_client  = cc3.menu_id
-LEFT JOIN stella_common.menu_list_t AS cc4 ON c.claim_category_4_client = cc4.menu_id
-LEFT JOIN stella_common.menu_list_t AS re1 ON c.relevant_exclusion_1 = re1.menu_id
-LEFT JOIN stella_common.menu_list_t AS re2 ON c.relevant_exclusion_2 = re2.menu_id
-LEFT JOIN stella_common.menu_list_t AS rc on c.risk_consequence = rc.menu_id
-LEFT JOIN claim_menus_t AS rl on c.risk_likelihood = rl.id
 LEFT JOIN
-stella_common.menu_list_t pox
-ON d.primary_or_xs_id = pox.menu_id
-LEFT JOIN stella_common.menu_list_t AS cs ON c.claim_status = cs.menu_id
+    stella_common.menu_list_t AS cc3
+    ON c.claim_category_3_client  = cc3.menu_id
 LEFT JOIN
-stella_common.underwriters_t ch
-ON c.claim_handler = ch.uw_id
+    stella_common.menu_list_t AS cc4
+    ON c.claim_category_4_client = cc4.menu_id
 LEFT JOIN
-stella_common.jurisdictions_t ij
-ON d.insured_registered_country_id = ij.jurisdiction_id
+    stella_common.menu_list_t AS re1
+    ON c.relevant_exclusion_1 = re1.menu_id
 LEFT JOIN
-stella_common.jurisdictions_t tj
-ON d.TargetDomicile = tj.jurisdiction_id
+    stella_common.menu_list_t AS re2
+    ON c.relevant_exclusion_2 = re2.menu_id
 LEFT JOIN
-stella_common.sectors_t super_s
-ON d.target_super_sector_id = super_s.sector_id
+    stella_common.menu_list_t AS rc
+    ON c.risk_consequence = rc.menu_id
 LEFT JOIN
-stella_common.sectors_t sub_s
-ON d.target_sub_sector_id = sub_s.sector_id
+    claim_menus_t AS rl
+    ON c.risk_likelihood = rl.id
+LEFT JOIN
+    stella_common.menu_list_t pox
+    ON d.primary_or_xs_id = pox.menu_id
+LEFT JOIN
+    stella_common.menu_list_t AS cs
+    ON c.claim_status = cs.menu_id
+LEFT JOIN
+    stella_common.underwriters_t ch
+    ON c.claim_handler = ch.uw_id
+LEFT JOIN
+    stella_common.jurisdictions_t ij
+    ON d.insured_registered_country_id = ij.jurisdiction_id
+LEFT JOIN
+    stella_common.jurisdictions_t tj
+    ON d.TargetDomicile = tj.jurisdiction_id
+LEFT JOIN
+    stella_common.sectors_t super_s
+    ON d.target_super_sector_id = super_s.sector_id
+LEFT JOIN
+    stella_common.sectors_t sub_s
+    ON d.target_sub_sector_id = sub_s.sector_id
 WHERE
-c.is_deleted = 0
-AND l.is_deleted = 0
-AND l.rp_on_layer = 93
-AND d.is_deleted = 0
+    c.is_deleted = 0
+    AND l.is_deleted = 0
+    AND l.rp_on_layer = 93
+    AND d.is_deleted = 0

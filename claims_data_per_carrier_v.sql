@@ -1,4 +1,4 @@
-CREATE VIEW stella_us.claims_data_per_carrier_v AS
+CREATE VIEW claims_data_per_carrier_v AS
 SELECT
 IF (
     l.policy_no IS NULL
@@ -94,18 +94,24 @@ LEFT JOIN stella_common.menu_list_t rf on c.risk_consequence = rf.menu_id
 LEFT JOIN stella_common.menu_list_t layer on d.primary_or_xs_id = layer.menu_id
 LEFT JOIN stella_common.menu_list_t cs ON c.claim_status = cs.menu_id
 
-LEFT JOIN claim_menus_t AS rl ON c.risk_likelihood = rl.id
 LEFT JOIN
-stella_common.underwriters_t AS ch
-ON c.claim_handler = ch.uw_id
-LEFT JOIN stella_common.jurisdictions_t tj ON d.TargetDomicile = tj.jurisdiction_id
-LEFT JOIN stella_common.jurisdictions_t ij ON d.insured_registered_country_id = ij.jurisdiction_id
+    stella_common.claim_menus_t AS rl
+    ON c.risk_likelihood = rl.id
+LEFT JOIN
+    stella_common.underwriters_t AS ch
+    ON c.claim_handler = ch.uw_id
+LEFT JOIN
+    stella_common.jurisdictions_t tj
+    ON d.TargetDomicile = tj.jurisdiction_id
+LEFT JOIN
+    stella_common.jurisdictions_t ij
+    ON d.insured_registered_country_id = ij.jurisdiction_id
 
 WHERE c.is_deleted = 0
-AND l.is_deleted = 0
-AND l.rp_on_layer = 93
-AND bin.is_deleted = 0
-AND sec.on_policy_id = 93
-AND sec.is_deleted = 0
+    AND l.is_deleted = 0
+    AND l.rp_on_layer = 93
+    AND bin.is_deleted = 0
+    AND sec.on_policy_id = 93
+    AND sec.is_deleted = 0
 
 ORDER BY policy_no
