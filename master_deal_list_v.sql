@@ -40,7 +40,7 @@ SELECT
     , d.insured_legal_name
     , irc.Jurisdiction      insured_registered_country
     , d.insured_registered_country_id
-
+    , iscd.menu_item is_sanction_checks_done
     , d.max_limit_quoted
 
     , d.nbi_prepper 	nbi_prepper_id
@@ -145,6 +145,9 @@ LEFT JOIN stella_common.sectors_t sub_s ON d.target_sub_sector_id = sub_s.sector
 LEFT JOIN stella_common.jurisdictions_t tlj ON d.TargetDomicile = tlj.jurisdiction_id
 LEFT JOIN stella_common.jurisdictions_t ic ON d.BuyerDomicile = ic.jurisdiction_id
 LEFT JOIN stella_common.jurisdictions_t irc ON d.insured_registered_country_id = irc.jurisdiction_id
+LEFT JOIN
+    stella_common.menu_list_t iscd
+    ON d.sanction_checks_done = iscd.menu_id
 LEFT JOIN (
    	SELECT
       	kw.deal_id__deals_t AS deal_id,
