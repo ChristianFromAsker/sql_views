@@ -46,8 +46,8 @@ SELECT
     , d.nbi_prepper 	nbi_prepper_id
     , IF(
         d.quote_due_time IS NULL
-    , DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
-    , CONCAT(DATE_FORMAT(d. quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)
+        , DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
+        , CONCAT(DATE_FORMAT(d. quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)
     ) nbi_deadline_us
 
     , pox.menu_item 	primary_or_xs
