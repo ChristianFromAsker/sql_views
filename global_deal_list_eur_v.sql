@@ -8,7 +8,7 @@ CREATE VIEW global_deal_list_eur_v AS
 
 WITH policy_counts_eur AS (
   	SELECT p.deal_id, COUNT(p.id) policy_count
-  	FROM stella_eur.layers_t p
+  	FROM stella_us.layers_t p
   	WHERE p.is_deleted = 0 AND p.rp_on_layer = 93
   	GROUP BY p.deal_id
 )
@@ -54,12 +54,12 @@ SELECT
     , d.primary_or_xs_id
     , pox.menu_item primary_or_xs
     , d.program_limit / d.currency_rate_deal program_limit_eur
+    , d.program_summary
 
     , d.risk_type_id
     , rt.risk_type_name 	risk_type
     , rtm.risk_type_name 	risk_type_major
     , rtm.risk_type_id 		risk_type_major_id
-    , d.program_summary
 
     , d.target_super_sector_id
     , ss.sector_name target_super_sector
@@ -94,7 +94,7 @@ SELECT
     , blf2.FirmName buyer_law_firm_2
 
 FROM
-    stella_eur.deals_t d
+    stella_us.deals_t d
 LEFT JOIN
     policy_counts_eur pce
     ON d.deal_id = pce.deal_id
