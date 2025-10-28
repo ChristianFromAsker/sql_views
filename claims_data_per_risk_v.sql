@@ -3,8 +3,8 @@ SELECT
     c.claim_id
     , bf.business_name broker_firm
     , c.claim_status
-    , c.claim_notice_date
-    , c.claim_notice_date ClaimDate
+    , c.claim_date
+    , c.claim_date ClaimDate
     , c.claim_closed_date
     , c.claim_closed_date ClaimClosedDate
     , FORMAT(c.claimed_loss / c.fx_rate_claim,0) claimed_amount_eur

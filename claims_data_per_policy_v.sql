@@ -8,8 +8,8 @@ SELECT l.id policy_id
 , l.deal_id
 , c.claim_id
 , c.claim_status
-, c.claim_notice_date
-, c.claim_notice_date ClaimDate
+, c.claim_date
+, c.claim_date ClaimDate
 , c.claim_closed_date
 , c.claim_closed_date ClaimClosedDate
 , c.claim_currency
