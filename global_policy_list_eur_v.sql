@@ -4,7 +4,12 @@ SELECT
     , p.id policy_id
 
     , p.broker_commission
+    , bf.business_name broker_firm
+    , d.budget_home_id
+    , d.broker_firm_id
+    , d.buyer_business_name
 
+    , d.closing_date
     , d.create_date
 
     , d.currency_date 	fx_date
@@ -17,7 +22,12 @@ SELECT
     , ds.menu_item deal_status
     , d.deal_status_id
 
+    , d.inception_date
+    , ie.entity_business_name issuing_entity
     , p.issuing_entity_id
+    , d.insured_registered_country_id
+    , irc.jurisdiction insured_registered_country
+
     , IF(
         p.layer_no = 0
         , 'Primary'
@@ -49,16 +59,10 @@ SELECT
     , p.underlying_limit
     , CAST(p.underlying_limit / d.currency_rate_deal AS DECIMAL(15,0)) underlying_limit_eur
 
-    , d.inception_date
-    , d.closing_date
-
-    , d.budget_home_id
-    , bh.entity_business_name budget_home
     , bc.jurisdiction budget_continent
+    , bh.budget_home_name budget_home
     , br.jurisdiction budget_region
 
-    , d.broker_firm_id
-    , bf.business_name broker_firm
     , d.primary_or_xs_id
     , pox.menu_item primary_or_xs
     , d.risk_type_id
@@ -74,9 +78,6 @@ SELECT
     , tj.jurisdiction target_jurisdiction
     , tjr.jurisdiction target_region
 
-    , d.buyer_business_name
-    , d.insured_registered_country_id
-    , irc.jurisdiction insured_registered_country
     , d.spa_law
     , slr.jurisdiction spa_law_region
     , d.deal_currency
@@ -122,14 +123,17 @@ LEFT JOIN
     stella_common.navins_homes_t navins
     ON p.navins_home_id = navins.home_id
 LEFT JOIN
-    stella_common.entities_t bh
-    ON d.budget_home_id = bh.entity_id
+    stella_common.entities_t ie
+    ON p.issuing_entity_id = ie.entity_id
+LEFT JOIN
+    stella_common.budget_homes_t bh
+    ON d.budget_home_id = bh.budget_home_id
 LEFT JOIN
     stella_common.jurisdictions_t bc
-    ON bh.entity_continent_id__jurisdictions_t = bc.jurisdiction_id
+    ON bh.budget_continent_id__jurisdictions_t = bc.jurisdiction_id
 LEFT JOIN
     stella_common.jurisdictions_t br
-    ON bh.budget_region_id = br.jurisdiction_id
+    ON bh.budget_region_id__jurisdictions_t = br.jurisdiction_id
 LEFT JOIN
     stella_common.sectors_t ss
     ON d.target_super_sector_id = ss.sector_id
