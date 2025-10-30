@@ -91,23 +91,23 @@ SELECT
     ) COLLATE utf8mb4_0900_ai_ci  AS target_sector_group_2
 
     , CONCAT('Week ', WEEK(
-    IF(
-    d.quote_due_date IS NULL,
-    d.submission_date,
-    d.quote_due_date
-    )
+        IF(
+            d.quote_due_date IS NULL,
+            d.submission_date,
+            d.quote_due_date
+        )
     ) + 1) week_no
     , WEEK(IF(
-    d.quote_due_date IS NULL,
-    d.submission_date,
-    d.quote_due_date
+        d.quote_due_date IS NULL,
+        d.submission_date,
+        d.quote_due_date
     )) week_no_number
 
     , CONCAT(
-    IFNULL(np.uw_initials, '')
-    , '\r\n', IFNULL(analyst.uw_initials, '')
-    , '\r\n', IFNULL(p_uw.uw_initials, '')
-    , '\r\n', IFNULL(s_uw.uw_initials, '')
+        IFNULL(np.uw_initials, '')
+        , '\r\n', IFNULL(analyst.uw_initials, '')
+        , '\r\n', IFNULL(p_uw.uw_initials, '')
+        , '\r\n', IFNULL(s_uw.uw_initials, '')
     ) 	roles
 
 FROM deals_t d
