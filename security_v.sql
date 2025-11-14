@@ -56,7 +56,8 @@ SELECT
         )
     AS DECIMAL(14,0)) reference_limit_deal_currency
 
-    , bl.limit_amount + IFNULL(edl.extra_limit, 0) AS max_binder_limit
+    , bl.limit_amount + IFNULL(edl.extra_limit, 0) max_binder_limit
+    , bl.limit_amount max_binder_limit_ex_extra
     , CONCAT(
         bl.limit_currency, ' ', FORMAT(bl.limit_amount + IFNULL(edl.extra_limit, 0), 0)
     ) AS max_binder_limit_hr
