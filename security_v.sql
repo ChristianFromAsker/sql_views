@@ -2,13 +2,16 @@ CREATE VIEW security_v AS
 SELECT
     s.id
     , s.id security_id
-    , s.create_date_security
+
     , s.binder_id
-    , s.policy_id
-    , s.max_limit_id
+    , s.create_date_security
     , l.deal_id
-    , l.policy_premium
+
+    , s.max_limit_id
     , s.on_policy_id
+    , s.policy_id
+    , l.policy_premium
+
     , s.referral_status_id
     , s.binder_compliant_id
     , s.default_quota
@@ -55,7 +58,7 @@ SELECT
 
     , bl.limit_amount + IFNULL(edl.extra_limit, 0) AS max_binder_limit
     , CONCAT(
-    bl.limit_currency, ' ', FORMAT(bl.limit_amount + IFNULL(edl.extra_limit, 0), 0)
+        bl.limit_currency, ' ', FORMAT(bl.limit_amount + IFNULL(edl.extra_limit, 0), 0)
     ) AS max_binder_limit_hr
     , b.binder_name
     , b.unique_reference
