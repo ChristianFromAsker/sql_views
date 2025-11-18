@@ -3,6 +3,8 @@ SELECT
     s.id
     , s.id security_id
 
+    , s.added_by
+
     , s.binder_id
     , s.create_date_security
     , l.deal_id
@@ -18,6 +20,8 @@ SELECT
     , s.quota
     , IFNULL(edl.extra_limit, 0) AS extra_limit
     , s.manual_limit
+    , s.manually_added
+
     , CAST(l.quota * l.layer_limit AS DECIMAL(14,0)) policy_limit
     , l.quota * s.quota layer_quota
     , (b.reference_limit + IFNULL(edl.extra_limit,0)) AS reference_limit
@@ -67,7 +71,7 @@ SELECT
     , l.layer_no
     , lt.layer_text layer_no_text
     , IF(l.policy_no IS NOT NULL, l.policy_no,
-        IF(l.rp_on_layer = 94, "n/a", l.stella_policy_no)
+        IF(l.rp_on_layer = 94, 'n/a', l.stella_policy_no)
     ) policy_no
     , rs.menu_item referral_status
     , op.menu_item on_policy
