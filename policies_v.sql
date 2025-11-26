@@ -31,6 +31,8 @@ SELECT
 
     , nh.navins_home
     , l.navins_home_id
+
+    , d.risk_type_id
     , bh.entity_business_name budget_home
 
     , d.budget_home_id temp_budget_home
@@ -53,6 +55,7 @@ SELECT
     , l.policy_name
 
     , CAST(l.quota * l.layer_limit AS DECIMAL(14,0)) policy_limit
+    , CAST(l.quota * l.layer_limit / d.currency_rate_deal AS DECIMAL(14,0)) policy_limit_eur
 
     , l.underlying_limit
     , l.quota
