@@ -10,6 +10,7 @@ SELECT
     , l.deal_id
 
     , s.max_limit_id
+    , b.minimum_underlying_limit
     , s.on_policy_id
     , s.policy_id
     , l.policy_premium
