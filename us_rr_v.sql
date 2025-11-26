@@ -33,7 +33,7 @@ SELECT d.deal_id
     , fa.firm_name uw_financial_advisor_hr
     , lf.FirmName uw_law_firm_hr
 
-FROM stella_eur.deals_t d
+FROM stella_us.deals_t d
 LEFT JOIN stella_common.underwriters_t uw1
     ON d.primary_uw= uw1.uw_id
 LEFT JOIN stella_common.underwriters_t uw2
