@@ -20,7 +20,7 @@ SELECT d.deal_id
     , uw1.uw_name primary_uw_hr
     , d.program_summary
     , d.retention
-    , rt.menu_item 		risk_type
+    , rt.risk_type_name_us 		risk_type
     , CONCAT(FORMAT(d.total_rp_premium_on_deal / d.total_rp_limit_on_deal * 100, 4), '%') 		rol_hr
 
     , uw2.uw_name secondary_uw_hr
@@ -44,8 +44,8 @@ LEFT JOIN law_firms_t lf
     ON d.uw_law_firm_id = lf.law_firm_id
 LEFT JOIN stella_common.menu_list_t poe
     ON d.primary_or_xs_id = poe.menu_id
-LEFT JOIN stella_common.menu_list_t rt
-    ON d.risk_type_id = rt.menu_id
+LEFT JOIN stella_common.risk_types_t rt
+    ON d.risk_type_id = rt.risk_type_id
 LEFT JOIN broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
 LEFT JOIN law_firms_t blf
