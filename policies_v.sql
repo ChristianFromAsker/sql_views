@@ -33,7 +33,7 @@ SELECT
     , l.navins_home_id
 
     , d.risk_type_id
-    , bh.entity_business_name budget_home
+    , bh.budget_home_name budget_home
 
     , d.budget_home_id temp_budget_home
 
@@ -76,24 +76,18 @@ SELECT
     , CAST(l.policy_premium - l.fundamental_premium AS DECIMAL(14,0)) general_premium
 
 FROM layers_t l
-LEFT JOIN
-    stella_common.menu_list_t ro
+LEFT JOIN stella_common.menu_list_t ro
     ON l.rp_on_layer = ro.menu_id
-LEFT JOIN
-    deals_t d
+LEFT JOIN deals_t d
     ON l.deal_id = d.deal_id
-LEFT JOIN
-    stella_common.policy_layer_texts_t lt
+LEFT JOIN stella_common.policy_layer_texts_t lt
     ON l.layer_no = lt.layer_no
-LEFT JOIN
-    stella_common.entities_t ie
+LEFT JOIN stella_common.entities_t ie
     ON l.issuing_entity_id = ie.entity_id
-LEFT JOIN
-    stella_common.navins_homes_t nh
+LEFT JOIN stella_common.navins_homes_t nh
     ON l.navins_home_id = nh.home_id
-LEFT JOIN
-    stella_common.entities_t bh
-    ON l.budget_home_id = bh.entity_id
+LEFT JOIN stella_common.budget_homes_t bh
+    ON l.budget_home_id = bh.budget_home_id
 
 WHERE
     l.is_deleted = 0
