@@ -15,8 +15,10 @@ SELECT
 FROM stella_eur.layers_t p
 LEFT JOIN stella_eur.deals_t d
     ON p.deal_id = d.deal_id
+LEFT JOIN stella_common.entities_t e
+    ON p.issuing_entity_id = e.entity_id
 LEFT JOIN stella_common.navins_homes_t nh
-    ON p.navins_home_id = nh.home_id
+    ON e.navins_home_id = nh.home_id
 WHERE p.rp_on_layer = 93 AND p.is_deleted = 0 AND d.is_deleted = 0
 
 UNION
@@ -37,6 +39,8 @@ SELECT
 FROM stella_us.layers_t p
 LEFT JOIN stella_us.deals_t d
     ON p.deal_id = d.deal_id
+LEFT JOIN stella_common.entities_t e
+    ON p.issuing_entity_id = e.entity_id
 LEFT JOIN stella_common.navins_homes_t nh
-    ON p.navins_home_id = nh.home_id
+    ON e.navins_home_id = nh.home_id
 WHERE p.rp_on_layer = 93 AND p.is_deleted = 0 AND d.is_deleted = 0
