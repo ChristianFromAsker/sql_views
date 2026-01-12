@@ -53,8 +53,8 @@ WHERE
 
 
 -- TOTAL FTES PER YEAR
-/*
-Set @input_year = 2025;
+-- /*
+Set @input_year = 2024;
 
 SELECT
   SUM(fte_portion) AS total_fte_portion
@@ -82,56 +82,42 @@ FROM (
 
 FROM
     stella_common.underwriters_t uws
-LEFT JOIN
-    stella_common.entities_t bh
+LEFT JOIN stella_common.entities_t bh
     ON uws.budget_home_id = bh.entity_id
-LEFT JOIN
-    stella_common.jurisdictions_t br
+LEFT JOIN stella_common.jurisdictions_t br
     ON bh.budget_region_id = br.jurisdiction_id
-LEFT JOIN
-       stella_common.jurisdictions_t bc
-       ON bh.entity_continent_id__jurisdictions_t = bc.jurisdiction_id
-           LEFT JOIN
-       stella_common.menu_list_t mut
-       ON uws.user_type_id = mut.menu_id
-           LEFT JOIN
-       stella_common.menu_list_t haa
-       ON uws.has_admin_access_id = haa.menu_id
-           LEFT JOIN
-       stella_common.entities_t ei
-       ON uws.budget_home_id = ei.entity_id
-    LEFT JOIN
-       stella_common.menu_list_t nh
-       ON ei.navins_home_id = nh.menu_id
-    LEFT JOIN
-       stella_common.menu_list_t ccg
-       ON uws.can_change_general_id = ccg.menu_id
-    LEFT JOIN
-       stella_common.menu_list_t ccj
-       ON uws.can_change_jurisdictions_id = ccj.menu_id
-    LEFT JOIN
-       stella_common.menu_list_t ccu
-       ON uws.can_change_uws_id = ccu.menu_id
-    LEFT JOIN
-       stella_common.menu_list_t ccbh
-       ON uws.can_change_budget_home_id = ccbh.menu_id
-    LEFT JOIN
-       stella_common.menu_list_t is_dev
-       ON uws.is_dev_id = is_dev.menu_id
-    LEFT JOIN
-       stella_common.menu_list_t isdt
-       ON uws.is_super_duper_trusted_id = isdt.menu_id
-
-    WHERE
-        uws.is_deleted = 0
-        AND bc.jurisdiction = 'North America'
-        AND user_type_id IN (149, 150, 620)
+LEFT JOIN stella_common.jurisdictions_t bc
+    ON bh.entity_continent_id__jurisdictions_t = bc.jurisdiction_id
+LEFT JOIN stella_common.menu_list_t mut
+    ON uws.user_type_id = mut.menu_id
+LEFT JOIN stella_common.menu_list_t haa
+   ON uws.has_admin_access_id = haa.menu_id
+LEFT JOIN stella_common.entities_t ei
+   ON uws.budget_home_id = ei.entity_id
+LEFT JOIN stella_common.menu_list_t nh
+    ON ei.navins_home_id = nh.menu_id
+LEFT JOIN stella_common.menu_list_t ccg
+    ON uws.can_change_general_id = ccg.menu_id
+LEFT JOIN stella_common.menu_list_t ccj
+    ON uws.can_change_jurisdictions_id = ccj.menu_id
+LEFT JOIN stella_common.menu_list_t ccu
+    ON uws.can_change_uws_id = ccu.menu_id
+LEFT JOIN stella_common.menu_list_t ccbh
+    ON uws.can_change_budget_home_id = ccbh.menu_id
+LEFT JOIN stella_common.menu_list_t is_dev
+    ON uws.is_dev_id = is_dev.menu_id
+LEFT JOIN stella_common.menu_list_t isdt
+    ON uws.is_super_duper_trusted_id = isdt.menu_id
+WHERE
+    uws.is_deleted = 0
+    -- AND bc.jurisdiction = 'North America'
+    AND user_type_id IN (149, 150, 620)
 ) as sub
 -- */
 
 
 -- LIST OF EMPLOYEES PER YEAR
--- /*
+/*
 Set @input_year = 2025;
 
 SELECT
