@@ -36,9 +36,26 @@ SELECT
     , d.currency_rate_eurusd	fx_usd_eur
 
     , d.inception_date
+    , d.insured_registered_country_id
+    , irc.jurisdiction insured_registered_country
+
     , pds.menu_item 	parent_deal_status
+    , p_uw.uw_name primary_uw_full_name
+    , d.primary_or_xs_id
+    , pox.menu_item primary_or_xs
+    , d.program_limit / d.currency_rate_deal program_limit_eur
+    , d.program_summary
+
+    , d.risk_type_id
+    , rt.risk_type_name 	risk_type
+    , rtm.risk_type_name 	risk_type_major
+    , rtm.risk_type_id 		risk_type_major_id
+
+    , s_uw.uw_name second_uw_full_name
     , d.spa_signing_date
     , CAST(d.signing_invoice_amount / currency_rate_deal AS DECIMAL(14,0))		signing_invoice_amount_eur
+    , d.spa_law
+    , slr.jurisdiction spa_law_region
 
     , IF(
         d.target_super_sector_id = 1
@@ -51,16 +68,6 @@ SELECT
     , wq.menu_item 	was_quoted
     , d.was_quoted_id
 
-    , d.primary_or_xs_id
-    , pox.menu_item primary_or_xs
-    , d.program_limit / d.currency_rate_deal program_limit_eur
-    , d.program_summary
-
-    , d.risk_type_id
-    , rt.risk_type_name 	risk_type
-    , rtm.risk_type_name 	risk_type_major
-    , rtm.risk_type_id 		risk_type_major_id
-
     , d.target_super_sector_id
     , ss.sector_name target_super_sector
     , d.target_sub_sector_id
@@ -68,11 +75,6 @@ SELECT
     , tj.jurisdiction target_jurisdiction
     , tjr.jurisdiction target_region
 
-    , d.insured_registered_country_id
-    , irc.jurisdiction insured_registered_country
-
-    , d.spa_law
-    , slr.jurisdiction spa_law_region
     , d.deal_currency
     , d.total_rp_premium_on_deal
 
@@ -158,5 +160,9 @@ LEFT JOIN
 LEFT JOIN
     stella_eur.law_firms_t slf
     ON d.SellerLegalFirm = slf.law_firm_id
+LEFT JOIN stella_common.underwriters_t p_uw
+    ON d.primary_uw = p_uw.uw_id
+LEFT JOIN stella_common.underwriters_t s_uw
+    ON d.secondary_uw = s_uw.uw_id
 
 WHERE d.is_deleted = 0 AND d.is_test_deal_id = 94
