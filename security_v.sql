@@ -32,7 +32,7 @@ SELECT
             s.quota *  l.layer_limit * l.quota,
             s.manual_limit
         )
-    AS DECIMAL(20,4)) binder_limit
+    AS DECIMAL(20,2)) binder_limit
     , CAST(s.default_quota *  l.layer_limit * l.quota AS DECIMAL(18,2)) default_binder_limit
     , bl.limit_currency max_limit_currency
     , s.max_limit_currency_to_deal_currency_fx
