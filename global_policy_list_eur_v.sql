@@ -97,12 +97,12 @@ SELECT
 
     , CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0)) ev_eur
 
-FROM stella_.layers_t p
+FROM stella_us.layers_t p
 LEFT JOIN
-    stella_.deals_t d
+    stella_us.deals_t d
     ON p.deal_id = d.deal_id
 LEFT JOIN
-    stella_.broker_firms_t bf
+    stella_us.broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
 LEFT JOIN
     stella_common.deal_statuses_t ds
