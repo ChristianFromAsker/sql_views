@@ -1,5 +1,6 @@
 CREATE VIEW deal_parties_v AS
 SELECT
+    d.deal_name,
     dp.deal_party_id,
     dp.create_date create_date_deal_party,
     dp.deal_id__deals_t deal_id,
@@ -34,6 +35,8 @@ LEFT JOIN stella_common.sectors_t sub_s
     ON p.party_sub_sector_id__sectors_t = sub_s.sector_id
 LEFT JOIN stella_common.sectors_t super_s
     ON p.party_super_sector_id__sectors_t = super_s.sector_id
+LEFT JOIN deals_t d
+    ON dp.deal_id__deals_t = d.deal_id
 WHERE
     dp.is_deleted = 0
 
