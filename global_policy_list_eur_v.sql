@@ -43,8 +43,10 @@ SELECT
     , IF (p.policy_no IS NOT NULL, p.policy_no, p.stella_policy_no) policy_no
     , CAST(p.quota * p.layer_limit AS DECIMAL(15,0)) policy_limit
     , CAST(p.quota * p.layer_limit / d.currency_rate_deal AS DECIMAL(15,0)) policy_limit_eur
+    , CAST(p.quota * p.layer_limit / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(15,0)) policy_limit_usd
     , p.policy_premium
-    , CAST(p.policy_premium / d.currency_rate_deal AS DECIMAL(15,0)) policy_premium_eur
+    , CAST(p.policy_premium / d.currency_rate_deal AS DECIMAL(15,0))                            policy_premium_eur
+    , CAST(p.policy_premium / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(15,0))   policy_premium_usd
 
     , p.quota
 
@@ -58,6 +60,7 @@ SELECT
 
     , p.underlying_limit
     , CAST(p.underlying_limit / d.currency_rate_deal AS DECIMAL(15,0)) underlying_limit_eur
+     , CAST(p.underlying_limit / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(15,0)) underlying_limit_usd
 
     , bc.jurisdiction budget_continent
     , bh.budget_home_name budget_home
@@ -83,26 +86,35 @@ SELECT
     , d.deal_currency
     , d.retention
 
-    , CAST(d.retention / d.currency_rate_deal AS DECIMAL(15,0))retention_eur
+    , CAST(d.retention / d.currency_rate_deal AS DECIMAL(15,0))                             retention_eur
+    , CAST(d.retention / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(15,0))    retention_usd
     , d.total_rp_premium_on_deal
-    , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal AS DECIMAL(15,0)) total_rp_premium_on_deal_eur
-    , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal AS DECIMAL(14,0)) total_rp_limit_on_deal_eur
-    , CAST(d.lowest_rp_attpoint / d.currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
+    , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal AS DECIMAL(15,0))                              total_rp_premium_on_deal_eur
+    , CAST(d.total_rp_premium_on_deal / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(15,0))     total_rp_premium_on_deal_usd
+    , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal AS DECIMAL(14,0))                            total_rp_limit_on_deal_eur
+    , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))   total_rp_limit_on_deal_usd
+    , CAST(d.lowest_rp_attpoint / d.currency_rate_deal AS DECIMAL(14,0))                            lowest_rp_attpoint_eur
+    , CAST(d.lowest_rp_attpoint / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))   lowest_rp_attpoint_usd
 
     , p.fundamental_limit
-    , CAST(p.fundamental_limit * p.quota / d.currency_rate_deal AS DECIMAL(14,0)) policy_fundamental_limit_eur
-    , CAST(p.fundamental_premium / d.currency_rate_deal AS DECIMAL(14,0)) fundamental_premium_eur
-    , CAST((p.quota * (p.layer_limit - p.fundamental_limit) / d.currency_rate_deal) AS DECIMAL(14,0)) policy_general_limit_eur
-    , CAST((p.policy_premium - p.fundamental_premium) / d.currency_rate_deal AS DECIMAL(14,0)) general_premium_eur
+    , CAST(p.fundamental_limit * p.quota / d.currency_rate_deal AS DECIMAL(14,0))                           policy_fundamental_limit_eur
+    , CAST(p.fundamental_limit * p.quota / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))  policy_fundamental_limit_usd
+    , CAST(p.fundamental_premium / d.currency_rate_deal AS DECIMAL(14,0))                           fundamental_premium_eur
+    , CAST(p.fundamental_premium / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))  fundamental_premium_usd
+    , CAST((p.quota * (p.layer_limit - p.fundamental_limit) / d.currency_rate_deal) AS DECIMAL(14,0))                           policy_general_limit_eur
+    , CAST((p.quota * (p.layer_limit - p.fundamental_limit) / d.currency_rate_deal) * d.currency_rate_eurusd AS DECIMAL(14,0))  policy_general_limit_usd
+    , CAST((p.policy_premium - p.fundamental_premium) / d.currency_rate_deal AS DECIMAL(14,0))                          general_premium_eur
+    , CAST((p.policy_premium - p.fundamental_premium) / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) general_premium_usd
 
-    , CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0)) ev_eur
+    , CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0))                            ev_eur
+    , CAST(d.ev / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))   ev_usd
 
-FROM stella_us.layers_t p
+FROM stella_eur.layers_t p
 LEFT JOIN
-    stella_us.deals_t d
+    stella_eur.deals_t d
     ON p.deal_id = d.deal_id
 LEFT JOIN
-    stella_us.broker_firms_t bf
+    stella_eur.broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
 LEFT JOIN
     stella_common.deal_statuses_t ds
