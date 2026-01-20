@@ -9,7 +9,7 @@ CREATE VIEW global_deal_list_eur_v AS
 
 WITH policy_count AS (
   	SELECT p.deal_id, COUNT(p.id) policy_count
-  	FROM stella_us.layers_t p
+  	FROM stella_eur.layers_t p
   	WHERE p.is_deleted = 0 AND p.rp_on_layer = 93
   	GROUP BY p.deal_id
 )
@@ -24,8 +24,6 @@ SELECT
     , d.budget_home_id
     , br.jurisdiction 		budget_region
     , br.jurisdiction_id	budget_region_id
-    , blf1.FirmName buyer_law_firm_1
-    , blf2.FirmName buyer_law_firm_2
 
     , d.closing_date
     , CAST(d.counsel_fee_amount / d.currency_rate_deal AS DECIMAL(14,0)) 	counsel_fee_amount_eur
@@ -68,7 +66,6 @@ SELECT
     , rtm.risk_type_id 		risk_type_major_id
 
     , s_uw.uw_name second_uw_full_name
-    , slf.FirmName seller_law_firm
     , CAST(d.signing_invoice_amount / d.currency_rate_deal AS DECIMAL(14,0))		signing_invoice_amount_eur
     , CAST(d.signing_invoice_amount / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))		signing_invoice_amount_usd
     , d.spa_law
@@ -104,19 +101,10 @@ SELECT
     , CAST((d.uw_fee_amount  - d.counsel_fee_amount) / currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) 	uw_fee_we_keep_usd
 
 FROM
-    stella_us.deals_t d
+    stella_eur.deals_t d
 LEFT JOIN
-    stella_us.broker_firms_t bf
+    stella_eur.broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
-LEFT JOIN
-    stella_us.law_firms_t blf1
-    ON d.buyer_law_firm_1_id = blf1.law_firm_id
-LEFT JOIN
-    stella_us.law_firms_t blf2
-    ON d.buyer_law_firm_2_id = blf2.law_firm_id
-LEFT JOIN
-    stella_us.law_firms_t slf
-    ON d.SellerLegalFirm = slf.law_firm_id
 LEFT JOIN
     policy_count pce
     ON d.deal_id = pce.deal_id
