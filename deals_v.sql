@@ -8,10 +8,10 @@ SELECT
     , bf.business_name broker_firm
     , d.broker_firm_id
     , d.broker_person
-    , bh.entity_business_name budget_home
+    , bh.budget_home_name budget_home
     , d.budget_home_id
     , br.jurisdiction budget_region
-    , bh.budget_region_id
+    , bh.budget_region_id__jurisdictions_t budget_region_id
 
     , d.closing_date
     , d.Comments
@@ -31,6 +31,7 @@ SELECT
 
     , d.EV
 
+    , d.inception_date
     , d.is_locked
     , d.is_repeat_buyer
 
@@ -79,15 +80,14 @@ SELECT
 
     , d.vat_home
 
-
     , d.UwCounselPerson1
     , d.UwCounselPerson2
     , uc.personal_name uw_counsel_person_1_hr
 
     , d.primary_insurer
+    , d.primary_insurer primary_insured_id
     , ins.insurer_business_name primary_insurer_hr
 
-    , d.inception_date
     , d.spa_signing_date
 
     , d.submission_date
@@ -154,11 +154,11 @@ LEFT JOIN
     stella_common.underwriters_t analyst
     ON d.analyst_id = analyst.uw_id
 LEFT JOIN
-    stella_common.entities_t bh
-    ON d.budget_home_id = bh.entity_id
+    stella_common.budget_homes_t bh
+    ON d.budget_home_id = bh.budget_home_id
 LEFT JOIN
     stella_common.jurisdictions_t br
-    ON bh.budget_region_id = br.jurisdiction_id
+    ON bh.budget_region_id__jurisdictions_t = br.jurisdiction_id
 LEFT JOIN
     stella_common.menu_list_t ds
     ON d.deal_status_id = ds.menu_id
@@ -204,11 +204,18 @@ LEFT JOIN
 LEFT JOIN
     stella_common.underwriters_t cu
     ON d.creating_uw = cu.uw_id
-LEFT JOIN stella_common.underwriters_t nbi_prepper ON d.nbi_prepper = nbi_prepper.uw_id
-LEFT JOIN stella_common.jurisdictions_t ic ON d.BuyerDomicile = ic.jurisdiction_id
-LEFT JOIN stella_common.jurisdictions_t irc ON d.insured_registered_country_id = irc.jurisdiction_id
-LEFT JOIN stella_common.jurisdictions_t tmj ON d.target_main_jurisdiction_id = tmj.jurisdiction_id
-LEFT JOIN stella_common.sectors_t sup_s ON d.target_super_sector_id = sup_s.sector_id
-LEFT JOIN stella_common.sectors_t sub_s ON d.target_sub_sector_id = sub_s.sector_id
-LEFT JOIN stella_common.jurisdictions_t tlj ON d.TargetDomicile = tlj.jurisdiction_id
+LEFT JOIN stella_common.underwriters_t nbi_prepper
+    ON d.nbi_prepper = nbi_prepper.uw_id
+LEFT JOIN stella_common.jurisdictions_t ic
+    ON d.BuyerDomicile = ic.jurisdiction_id
+LEFT JOIN stella_common.jurisdictions_t irc
+    ON d.insured_registered_country_id = irc.jurisdiction_id
+LEFT JOIN stella_common.jurisdictions_t tmj
+    ON d.target_main_jurisdiction_id = tmj.jurisdiction_id
+LEFT JOIN stella_common.sectors_t sup_s
+    ON d.target_super_sector_id = sup_s.sector_id
+LEFT JOIN stella_common.sectors_t sub_s
+    ON d.target_sub_sector_id = sub_s.sector_id
+LEFT JOIN stella_common.jurisdictions_t tlj
+    ON d.TargetDomicile = tlj.jurisdiction_id
 WHERE d.is_deleted = 0
