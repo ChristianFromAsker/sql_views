@@ -5,42 +5,61 @@ SELECT d.deal_id,
     d.broker_firm_id,
     d.budget_home_id,
     bh.budget_home_name,
+    CONCAT(bh.budget_home_name, '<br><br>', d.spa_law) budget_home_spa_law,
     d.create_date,
+    CONCAT(
+        '<i>deal name</i>:  ', d.deal_name, '<br>',
+        '<i>risk type</i>:  ', IFNULL(rt.risk_type_name, ''), '<br>',
+        '<i>deal status</i>:  ', ds.menu_item, '<br>',
+        '<i>broker firm</i>:  ', IFNULL(bf.business_name, ''), '<br>',
+        '<i>spa law</i>:  ', d.spa_law, '<br>',
+        '<i>1st uw</i>:  ', IFNULL(pu.uw_name, ''), '<br>'
+    ) deal_data,
     d.deal_name,
-    CONCAT(d.deal_name, '\n', ' ' , '\n', bf.business_name) deal_name_broker_firm,
+    CONCAT(d.deal_name, '<br><br>', bf.business_name) deal_name_broker_firm,
     d.deal_status_id,
     ds.menu_item deal_status,
-    CONCAT(ds.menu_item, '\n', ' ' , '\n', rt.risk_type_name) deal_status_risk_type,
+    CONCAT(ds.menu_item, '<br><br>', rt.risk_type_name, '<br>', ' ' , '<br>', d.deal_id) deal_status_risk_type,
     d.ev,
     d.inception_date,
     d.primary_uw primary_uw_id,
     pu.uw_name primary_uw_name,
+    CONCAT(NULLIF(pu.uw_name, 'not provided'), '<br><br>', NULLIF(su.uw_name, 'not provided')) primary_uw_second_uw,
     d.risk_type_id,
     rt.risk_type_name,
     d.secondary_uw second_uw_id,
     su.uw_name second_uw_name,
     d.spa_law,
 
+    -- All insured business names for the deal
+    NULLIF(
+        GROUP_CONCAT(DISTINCT CASE WHEN r.deal_role_name = 'insured' THEN CONCAT(p.party_business_name, '<br>', p.party_legal_name ) END
+            ORDER BY p.party_business_name SEPARATOR ',<br><br>'
+        ),
+      ''
+    ) AS insureds,
+
     -- All Target business names for the deal
     NULLIF(
         GROUP_CONCAT(DISTINCT CASE WHEN r.deal_role_name = 'target' THEN p.party_business_name END
-            ORDER BY p.party_business_name SEPARATOR ', \n'),
+            ORDER BY p.party_business_name SEPARATOR ',<br>'),
       ''
-    ) AS target_business_name,
+    ) AS targets,
 
     -- All Buyer business names for the deal
     NULLIF(
         GROUP_CONCAT(DISTINCT CASE WHEN r.deal_role_name = 'buyer' THEN p.party_business_name END
-            ORDER BY p.party_business_name SEPARATOR ', \n'),
+            ORDER BY p.party_business_name SEPARATOR ',<br>'),
       ''
-    ) AS buyer_business_name,
+    ) AS buyers,
 
     -- All Seller business names for the deal
     NULLIF(
-        GROUP_CONCAT(DISTINCT CASE WHEN r.deal_role_name = 'seller' THEN p.party_business_name END
-            ORDER BY p.party_business_name SEPARATOR ', \n'),
+        GROUP_CONCAT(DISTINCT CASE WHEN r.deal_role_name = 'seller' THEN CONCAT(p.party_business_name, '<br>', p.party_legal_name ) END
+            ORDER BY p.party_business_name SEPARATOR ',<br><br>'
+        ),
       ''
-    ) AS seller_business_name
+    ) AS sellers
 
 FROM deals_t d
 LEFT JOIN broker_firms_t bf
@@ -64,4 +83,5 @@ LEFT JOIN stella_common.underwriters_t su
 WHERE r.is_deleted = 0
     AND dp.is_deleted = 0
 GROUP BY
-    d.deal_id, d.deal_name;
+    d.deal_id, d.deal_name
+ORDER BY d.deal_id DESC;
