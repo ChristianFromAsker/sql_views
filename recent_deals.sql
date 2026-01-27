@@ -1,5 +1,6 @@
-CREATE VIEW recent_deals_v AS
+CREATE OR REPLACE VIEW stella_us.recent_deals_v AS
 SELECT d.deal_id
+    , d.insured_registered_country_id
     , d.broker_firm_id
     , d.broker_person
     , d.budget_home_id
@@ -18,8 +19,8 @@ SELECT d.deal_id
 
     , IF(
 	    d.quote_due_time IS NULL
-        , DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y")
-        , CONCAT(DATE_FORMAT(d.quote_due_date, "%a %b, %e/%y"), "\r\n" , d.quote_due_time)
+        , DATE_FORMAT(d.quote_due_date, '%a %b, %e/%y')
+        , CONCAT(DATE_FORMAT(d.quote_due_date, '%a %b, %e/%y'), '\r\n' , d.quote_due_time)
     ) nbi_deadline_full
     , d.nbi_prepper
 
