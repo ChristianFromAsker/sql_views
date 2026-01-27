@@ -1,4 +1,4 @@
-CREATE VIEW sub_control_v AS
+CREATE OR REPLACE VIEW sub_control_v AS
 SELECT
     d.deal_id
     , d.deal_name
@@ -6,6 +6,7 @@ SELECT
     , d.budget_home_id
     , d.deal_currency
     , d.ev
+    , d.insured_registered_country_id
     , d.spa_law
     , d.key_financials
     , d.target_business_name
