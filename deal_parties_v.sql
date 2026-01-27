@@ -1,4 +1,4 @@
-CREATE VIEW deal_parties_v AS
+CREATE OR REPLACE VIEW deal_parties_v AS
 SELECT
     d.deal_name,
     dp.deal_party_id,
@@ -6,6 +6,7 @@ SELECT
     dp.deal_id__deals_t deal_id,
     dr.deal_role_name,
     dr.deal_role_id,
+    d.ev,
     dp.party_percentage,
     p.party_brand_id__brands_t party_brand_id,
     p.party_business_name,
@@ -38,5 +39,7 @@ LEFT JOIN stella_common.sectors_t super_s
 LEFT JOIN deals_t d
     ON dp.deal_id__deals_t = d.deal_id
 WHERE
-    dp.is_deleted = 0
+    dp.is_deleted = 0 AND
+    d.is_deleted = 0
+    -- AND d.is_test_deal_id = 94
 
