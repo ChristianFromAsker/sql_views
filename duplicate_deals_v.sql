@@ -1,5 +1,5 @@
 
-CREATE OR REPLACE VIEW stella_eur.duplicate_deals_v AS
+CREATE OR REPLACE VIEW duplicate_deals_v AS
 SELECT d.deal_id,
     bf.business_name broker_firm_name,
     d.broker_firm_id,
