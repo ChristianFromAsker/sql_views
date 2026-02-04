@@ -1,11 +1,15 @@
 /*
 Log
-Friday 20 December 2024: stella_policy_no is the auto-generated policy from Stella. However, sometimes, UWs get it wrong etc., and we need a way to override the auto-generated policy no. This happens by populating policy_no with whatever policy no is in the policy document.
+Friday 20 December 2024: stella_policy_no is the auto-generated policy from Stella. However, sometimes, UWs get it wrong
+etc., and we need a way to override the auto-generated policy no. This happens by populating policy_no with whatever
+policy no is in the policy document.
 
-Friday 11 October 2024, CK: Removed c5_policy_no. Will transition to only using policy_no, with the logic. Hence, policy_no_universal should be retired (this was a datapoint to cater for when we had c5 policy nos and Stella policy nos at the same time).
+Friday 11 October 2024, CK: Removed c5_policy_no. Will transition to only using policy_no, with the logic. Hence,
+policy_no_universal should be retired (this was a datapoint to cater for when we had c5 policy nos and Stella policy
+nos at the same time).
  */
 
-CREATE VIEW
+CREATE OR REPLACE VIEW
     policies_v AS
 SELECT
     l.id
@@ -24,6 +28,10 @@ SELECT
         , IF (l.policy_name IS NULL, '', CONCAT(' | ', l.policy_name))
     ) display_view
 
+    , l.insured insured_id
+    , i.party_business_name insured_name
+    , i.party_registered_country_id__jurisdictions_t    insured_registered_country_id
+    , irj.jurisdiction                                  insured_registered_country_name
     , ie.entity_business_name 	issuing_entity
     , l.issuing_entity_id
 
@@ -76,18 +84,22 @@ SELECT
     , CAST(l.policy_premium - l.fundamental_premium AS DECIMAL(14,0)) general_premium
 
 FROM layers_t l
-LEFT JOIN stella_common.menu_list_t ro
-    ON l.rp_on_layer = ro.menu_id
 LEFT JOIN deals_t d
     ON l.deal_id = d.deal_id
-LEFT JOIN stella_common.policy_layer_texts_t lt
-    ON l.layer_no = lt.layer_no
-LEFT JOIN stella_common.entities_t ie
-    ON l.issuing_entity_id = ie.entity_id
-LEFT JOIN stella_common.navins_homes_t nh
-    ON l.navins_home_id = nh.home_id
+LEFT JOIN parties_t i
+    ON l.insured = i.party_id
 LEFT JOIN stella_common.budget_homes_t bh
     ON l.budget_home_id = bh.budget_home_id
+LEFT JOIN stella_common.entities_t ie
+    ON l.issuing_entity_id = ie.entity_id
+LEFT JOIN stella_common.jurisdictions_t irj
+    on i.party_registered_country_id__jurisdictions_t = irj.jurisdiction_id
+LEFT JOIN stella_common.menu_list_t ro
+    ON l.rp_on_layer = ro.menu_id
+LEFT JOIN stella_common.policy_layer_texts_t lt
+    ON l.layer_no = lt.layer_no
+LEFT JOIN stella_common.navins_homes_t nh
+    ON l.navins_home_id = nh.home_id
 
 WHERE
     l.is_deleted = 0
