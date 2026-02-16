@@ -1,11 +1,17 @@
 
+
+/*
+-- 16 February 2026
+ALTER TABLE stella_common.brands_t
+ADD is_advisor DECIMAL(1,0) DEFAULT 0 AFTER is_active
+-- */
+
 /*
 -- 13 February 2026
 ALTER TABLE stella_common.brands_t
 ADD is_party DECIMAL(1,0) DEFAULT 0,
 ADD is_broker DECIMAL(1,0) DEFAULT 0,
 ADD is_competitor DECIMAL(1,0) DEFAULT 0,
-ADD is_vendor DECIMAL(1,0) DEFAULT 0
 -- */
 
 /*
