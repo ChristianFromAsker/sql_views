@@ -22,52 +22,57 @@ SELECT
     , c.claim_category_3_result
     , c.claim_category_4_result
     , c.claim_closed_date
+    , c.claim_status
     , c.claimed_loss
     , c.claim_currency
     , c.Comments
+    , d.currency_rate_deal
+
     , c.deal_id
+    , d.deal_currency
     , c.defence_costs
+
+    , c.expenses_paid_rp
+    , d.ev
+    , FORMAT(d.ev / d.currency_rate_deal, 0) AS ev_eur
     , c.estimated_loss
+
+    , c.final_loss
     , c.fx_rate_claim
     , c.investigation_costs_paid
+    , c.internal_advisor_fees
+    , FORMAT(c.internal_advisor_fees / c.fx_rate_claim,0) internal_advisor_fees_eur
+    , c.is_third_party_demand_id
+    , c.indemnity_paid
+    , c.interests_paid
+
+    , d.program_summary
+
     , c.relevant_exclusion_1
     , c.relevant_exclusion_2
     , c.relevant_exclusion_3
     , c.relevant_exclusion_4
-    , c.claim_status
     , c.risk_consequence
     , c.risk_likelihood
-    , c.final_loss
-    , c.internal_advisor_fees
-    , c.is_third_party_demand_id
-    , c.indemnity_paid
-    , c.interests_paid
-    , c.expenses_paid_rp
-    , d.program_summary
-    , d.deal_currency
-    , d.ev
-    , d.currency_rate_deal
+
     , d.lowest_rp_attpoint
     , d.retention
     , d.drop_end
     , d.spa_law
     , d.deal_name
     , d.inception_date
-    , d.insured_registered_country_id insured_jurisdiction
     , d.drop_period
     , d.primary_or_xs_id primary_or_xs
+
     , d.target_desc
-    , d.target_business_name
-    , d.insured_legal_name
-    , d.TargetDomicile target_jurisdiction
     , d.target_sub_sector_id sub_sector
     , d.target_super_sector_id super_sector
     , c.total_loss_paid
     , c.total_amount_paid
     , d.total_rp_limit_on_deal
     , d.total_rp_premium_on_deal
-    , FORMAT(c.internal_advisor_fees / c.fx_rate_claim,0) internal_advisor_fees_eur
-    , FORMAT(d.ev / d.currency_rate_deal, 0) AS ev_eur
+
+
     , FORMAT(d.total_rp_limit_on_deal / d.currency_rate_deal,0) AS total_rp_limit_on_deal_eur
     , FORMAT(d.retention/ d.currency_rate_deal,0) AS drop_start_eur
     , FORMAT(d.drop_end / d.currency_rate_deal,0) AS drop_end_eur
@@ -87,6 +92,14 @@ SELECT
     , ch.uw_initials AS claim_handler_hr
     , cc.uw_initials claim_creator_hr
     , cs.menu_item AS claim_status_hr
+
+    -- to be deleted
+    , d.insured_registered_country_id insured_jurisdiction
+    , d.target_business_name
+    , d.insured_legal_name
+    , d.TargetDomicile target_jurisdiction
+
+    -- end to be deleted
 
 FROM claims_t c
 LEFT JOIN
