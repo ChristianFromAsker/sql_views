@@ -1,4 +1,4 @@
-CREATE VIEW claims_data_per_risk_v AS
+CREATE OR REPLACE VIEW claims_data_per_risk_v AS
 SELECT
     c.claim_id
     , bf.business_name broker_firm
@@ -26,8 +26,6 @@ SELECT
     , FORMAT(c.final_loss / c.fx_rate_claim,0) final_loss_eur
 
     , d.inception_date
-    , irj.jurisdiction insured_registered_country
-    , d.insured_registered_country_id
     , c.internal_advisor_fees
 
     , d.lowest_rp_attpoint
@@ -50,8 +48,6 @@ SELECT
     , d.spa_law
 
     , d.target_desc
-    , trj.jurisdiction target_registered_country
-    , d.TargetDomicile target_registered_country_id
     , d.target_sub_sector_id
     , t_sub.sector_name target_sub_sector
     , d.target_super_sector_id
@@ -60,8 +56,6 @@ SELECT
     , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal AS DECIMAL(18,0)) total_rp_limit_on_deal_eur
     , d.total_rp_premium_on_deal
     , d.total_rp_premium_on_deal / d.currency_rate_deal total_rp_premium_on_deal_eur
-
-    , d.target_business_name
 
     , FORMAT(c.internal_advisor_fees / c.fx_rate_usd,0) internal_advisor_fees_usd
     , FORMAT(d.total_rp_limit_on_deal / c.fx_rate_usd,0) AS total_rp_limit_on_deal_usd
