@@ -1,4 +1,4 @@
-CREATE VIEW live_deals_v AS
+CREATE OR REPLACE VIEW live_deals_v AS
 SELECT
     d.deal_id
 
@@ -13,11 +13,15 @@ SELECT
         bf.business_name
         , '\r\n'
         , IFNULL(broker_person.PersonalName,'')
-      )	broker_info
+    ) broker_info
     , CONCAT(bh.entity_business_name, '\r\n', d.spa_law, ' law') budget_home_spa_law
     , br.jurisdiction 		budget_region
     , br.jurisdiction_id	budget_region_id
     , d.buyer_business_name
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 2 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS buyer_business_names
     , blf.FirmName 		buyer_law_firm_1
 
     , d.deal_currency
@@ -75,6 +79,10 @@ SELECT
     , d.submission_date
 
     , d.target_business_name
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 4 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS target_business_names
     , d.target_desc
 
     , IF(d.target_super_sector_id IN (1,2,7)
@@ -147,7 +155,14 @@ LEFT JOIN
 LEFT JOIN
 	lawyers_t 					uw_law_person
 	ON d.UWCounselPerson1 =	uw_law_person.lawyer_id
+LEFT JOIN deal_parties_t dp
+    ON dp.deal_id__deals_t = d.deal_id
+    AND dp.is_deleted = 0
+LEFT JOIN parties_t p
+    ON p.party_id = dp.party_id__parties_t
+    AND p.is_deleted = 0
 WHERE
     d.is_deleted = 0
     AND d.is_test_deal_id = 94
     AND d.deal_status_id IN (3, 4, 5)
+GROUP BY d.deal_id
