@@ -1,11 +1,9 @@
-CREATE VIEW claims_data_per_policy_v AS
+CREATE OR REPLACE VIEW claims_data_per_policy_v AS
 SELECT l.id policy_id
     , IF (l.policy_no IS NOT NULL
         , l.policy_no
         , l.stella_policy_no
     ) policy_no
-
-    , d.buyer_business_name
 
     , c.comments
 
@@ -16,6 +14,7 @@ SELECT l.id policy_id
     , c.claim_closed_date
     , c.claim_closed_date ClaimClosedDate
     , c.claim_currency
+    , FORMAT(c.claimed_loss / c.fx_rate_claim,0) claimed_amount_eur
     , d.currency_rate_deal
 
     , l.deal_id
@@ -27,8 +26,10 @@ SELECT l.id policy_id
     , FORMAT(d.ev / d.currency_rate_deal, 0) AS ev_eur
 
     , d.inception_date
+    , l.insured
+    , i.party_business_name insured_business_name
+    , i.party_legal_name insured_legal_name
     , ij.jurisdiction insured_jurisdiction
-    , d.insured_legal_name
     , FORMAT(c.internal_advisor_fees / c.fx_rate_claim,0) internal_advisor_fees_eur
 
     , l.layer_no
@@ -54,8 +55,6 @@ SELECT l.id policy_id
 
     , FORMAT(d.total_rp_limit_on_deal / d.currency_rate_deal,0) AS total_rp_limit_on_deal_eur
 
-
-    , FORMAT(c.claimed_loss / c.fx_rate_claim,0) claimed_amount_eur
     , FORMAT(c.estimated_loss / c.fx_rate_claim,0) estimated_loss_eur
     , FORMAT(c.final_loss / c.fx_rate_claim,0) final_loss_eur
     , FORMAT((l.layer_limit * l.quota) / d.currency_rate_deal,0) policy_limit_eur
@@ -111,61 +110,47 @@ FROM layers_t l
 LEFT JOIN
 deals_t AS d
 ON l.deal_id = d.deal_id
-LEFT JOIN claims_t c ON c.deal_id = d.deal_id
-LEFT JOIN
-    broker_firms_t b
+LEFT JOIN claims_t c
+    ON c.deal_id = d.deal_id
+LEFT JOIN broker_firms_t b
     ON b.broker_firm_id = d.broker_firm_id
-LEFT JOIN
-    stella_common.menu_list_t AS cc1
+LEFT JOIN stella_common.menu_list_t AS cc1
     ON c.claim_category_1_client  = cc1.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS cc2
+LEFT JOIN stella_common.menu_list_t AS cc2
     ON c.claim_category_2_client = cc2.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS cc3
+LEFT JOIN stella_common.menu_list_t AS cc3
     ON c.claim_category_3_client  = cc3.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS cc4
+LEFT JOIN stella_common.menu_list_t AS cc4
     ON c.claim_category_4_client = cc4.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS re1
+LEFT JOIN stella_common.menu_list_t AS re1
     ON c.relevant_exclusion_1 = re1.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS re2
+LEFT JOIN stella_common.menu_list_t AS re2
     ON c.relevant_exclusion_2 = re2.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS rc
+LEFT JOIN stella_common.menu_list_t AS rc
     ON c.risk_consequence = rc.menu_id
-LEFT JOIN
-    claim_menus_t AS rl
+LEFT JOIN claim_menus_t AS rl
     ON c.risk_likelihood = rl.id
-LEFT JOIN
-    stella_common.menu_list_t pox
+LEFT JOIN stella_common.menu_list_t pox
     ON d.primary_or_xs_id = pox.menu_id
-LEFT JOIN
-    stella_common.menu_list_t AS cs
+LEFT JOIN stella_common.menu_list_t AS cs
     ON c.claim_status = cs.menu_id
-LEFT JOIN
-    stella_common.underwriters_t ch
+LEFT JOIN stella_common.underwriters_t ch
     ON c.claim_handler = ch.uw_id
-LEFT JOIN
-    stella_common.underwriters_t p_uw
+LEFT JOIN stella_common.underwriters_t p_uw
     ON d.primary_uw = p_uw.uw_id
-LEFT JOIN
-    stella_common.underwriters_t s_uw
+LEFT JOIN stella_common.underwriters_t s_uw
     ON d.secondary_uw = s_uw.uw_id
-LEFT JOIN
-    stella_common.jurisdictions_t ij
-    ON d.insured_registered_country_id = ij.jurisdiction_id
-LEFT JOIN
-    stella_common.jurisdictions_t tj
+LEFT JOIN stella_common.jurisdictions_t tj
     ON d.TargetDomicile = tj.jurisdiction_id
-LEFT JOIN
-    stella_common.sectors_t super_s
+LEFT JOIN stella_common.sectors_t super_s
     ON d.target_super_sector_id = super_s.sector_id
-LEFT JOIN
-    stella_common.sectors_t sub_s
+LEFT JOIN stella_common.sectors_t sub_s
     ON d.target_sub_sector_id = sub_s.sector_id
+LEFT JOIN parties_t i
+    ON l.insured = i.party_id
+LEFT JOIN stella_common.jurisdictions_t ij
+    ON i.party_registered_country_id__jurisdictions_t = ij.jurisdiction_id
+
 WHERE
     c.is_deleted = 0
     AND l.is_deleted = 0
