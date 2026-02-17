@@ -43,6 +43,10 @@ SELECT
     , CAST(ev / d.currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) ev_usd
 
     , d.inception_date
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 1 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS insured_business_names
     , d.insured_legal_name
     , GROUP_CONCAT(
         DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 1 THEN p.party_registered_country_id__jurisdictions_t END
@@ -82,6 +86,10 @@ SELECT
 
     , d.secondary_uw 	second_uw_id
     , suw.uw_initials 	second_uw_initials
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 5 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS seller_business_names
     , d.spa_law
     , stage.menu_item 		stage
     , d.submission_date
