@@ -1,4 +1,4 @@
-CREATE VIEW claim_details_v AS
+CREATE OR REPLACE VIEW claim_details_v AS
 SELECT
     c.claim_id
     , c.create_date
@@ -65,13 +65,14 @@ SELECT
     , d.primary_or_xs_id primary_or_xs
 
     , d.target_desc
-    , d.target_sub_sector_id sub_sector
-    , d.target_super_sector_id super_sector
+    , d.target_sub_sector_id    sub_sector
+    , sub_s.sector_name         sub_sector_name
+    , d.target_super_sector_id  super_sector
+    , sup_s.sector_name         super_sector_name
     , c.total_loss_paid
     , c.total_amount_paid
     , d.total_rp_limit_on_deal
     , d.total_rp_premium_on_deal
-
 
     , FORMAT(d.total_rp_limit_on_deal / d.currency_rate_deal,0) AS total_rp_limit_on_deal_eur
     , FORMAT(d.retention/ d.currency_rate_deal,0) AS drop_start_eur
@@ -92,14 +93,6 @@ SELECT
     , ch.uw_initials AS claim_handler_hr
     , cc.uw_initials claim_creator_hr
     , cs.menu_item AS claim_status_hr
-
-    -- to be deleted
-    , d.insured_registered_country_id insured_jurisdiction
-    , d.target_business_name
-    , d.insured_legal_name
-    , d.TargetDomicile target_jurisdiction
-
-    -- end to be deleted
 
 FROM claims_t c
 LEFT JOIN
@@ -144,5 +137,9 @@ LEFT JOIN
 LEFT JOIN
     stella_common.underwriters_t cc
     ON c.claim_creator = cc.uw_id
+LEFT JOIN stella_common.sectors_t sup_s ON
+    d.target_super_sector_id = sup_s.sector_id
+LEFT JOIN stella_common.sectors_t sub_s ON
+    d.target_sub_sector_id = sub_s.sector_id
 WHERE
     c.is_deleted = 0
