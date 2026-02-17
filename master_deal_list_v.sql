@@ -187,11 +187,11 @@ LEFT JOIN stella_common.jurisdictions_t irc ON
 LEFT JOIN stella_common.menu_list_t iscd
     ON d.sanction_checks_done = iscd.menu_id
 LEFT JOIN deal_parties_t dp
-       ON dp.deal_id__deals_t = d.deal_id
-      AND dp.is_deleted = 0
+    ON dp.deal_id__deals_t = d.deal_id
+    AND dp.is_deleted = 0
 LEFT JOIN parties_t p
-       ON p.party_id = dp.party_id__parties_t
-      AND p.is_deleted = 0
+    ON p.party_id = dp.party_id__parties_t
+    AND p.is_deleted = 0
 LEFT JOIN deal_tags_t dt
     ON d.deal_id = dt.deal_id__deals_t
     AND dt.is_deleted = 0
