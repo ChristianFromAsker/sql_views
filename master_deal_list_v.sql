@@ -1,5 +1,4 @@
--- comment
-CREATE VIEW master_deal_list_v AS
+CREATE OR REPLACE VIEW master_deal_list_v AS
 SELECT
     d.deal_id
 
@@ -14,12 +13,15 @@ SELECT
     , bh.entity_business_name 		budget_home
     , d.budget_home_id
     , d.BuyerDomicile
-    , d.buyer_business_name
     , d.buyer_law_firm_1_id
     , blf1.FirmName     buyer_law_firm_1
     , d.buyer_law_firm_2_id
     , blf2.FirmName     buyer_law_firm_2
     , br.jurisdiction 			budget_region
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 2 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS buyer_business_names
 
     , d.comments
     , d.create_date
@@ -32,7 +34,7 @@ SELECT
     , ds.menu_item 	    deal_status
     , d.deal_status_id
     , ds.menu_item_us 		deal_status_us
-    , tags.deal_tags
+     , GROUP_CONCAT(DISTINCT tdt.tag_name SEPARATOR '; ') AS deal_tags
     , d.drop_end
     , d.drop_period
 
@@ -42,9 +44,16 @@ SELECT
 
     , d.inception_date
     , d.insured_legal_name
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 1 THEN p.party_registered_country_id__jurisdictions_t END
+        ORDER BY p.party_registered_country_id__jurisdictions_t SEPARATOR '; '
+    ) AS insured_registered_country_ids
     , irc.Jurisdiction      insured_registered_country
-    , d.insured_registered_country_id
     , iscd.menu_item is_sanction_checks_done
+
+    , d.lowest_rp_attpoint
+    , CAST(lowest_rp_attpoint / currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
+
     , d.max_limit_quoted
 
     , d.nbi_prepper 	nbi_prepper_id
@@ -77,15 +86,15 @@ SELECT
     , stage.menu_item 		stage
     , d.submission_date
 
-    , d.seller_business_name
     , slf.FirmName          seller_law_firm
     , d.SellerLegalFirm     seller_law_firm_id
     , d.submission_notes
 
-    , d.target_business_name
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 4 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS target_business_names
     , d.target_desc
-    , d.target_legal_name
-    , tlj.jurisdiction      target_legal_jurisdiction
     , sup_s.sector_name     target_super_sector
     , d.target_sub_sector_id
     , sub_s.sector_name     target_sub_sector
@@ -107,13 +116,20 @@ SELECT
     , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal AS DECIMAL(14,0)) total_rp_limit_on_deal_eur
     , CAST(d.total_rp_limit_on_deal / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) total_rp_limit_on_deal_usd
 
-    , d.lowest_rp_attpoint
-    , CAST(lowest_rp_attpoint / currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
-
     -- Finance related data fields that shall be removed
      , d.initial_premium_received
      , d.PremiumReceived    premium_received
      , d.signing_invoice_amount
+    -- end Finance related data fields that shall be removed
+
+    -- to be removed
+    , d.buyer_business_name
+    , d.seller_business_name
+    , d.target_business_name
+    , d.target_legal_name
+    , tlj.jurisdiction      target_legal_jurisdiction
+    , d.insured_registered_country_id
+    -- end to be removed
 
 FROM deals_t d
 LEFT JOIN stella_common.underwriters_t analyst
@@ -162,18 +178,18 @@ LEFT JOIN stella_common.jurisdictions_t irc ON
     d.insured_registered_country_id = irc.jurisdiction_id
 LEFT JOIN stella_common.menu_list_t iscd
     ON d.sanction_checks_done = iscd.menu_id
-LEFT JOIN (
-   	SELECT
-      	kw.deal_id__deals_t AS deal_id,
-      GROUP_CONCAT(tkw.tag_name ORDER BY tkw.tag_name ASC SEPARATOR ', ') AS deal_tags
-    	FROM deal_tags_t kw
-    	JOIN stella_common.template_deal_tags_t tkw
-            ON kw.keyword_id__template_keywords_t = tkw.tag_id
-        WHERE kw.is_deleted = 0
-    GROUP BY kw.deal_id__deals_t
-    ) tags ON tags.deal_id = d.deal_id
+LEFT JOIN deal_parties_t dp
+       ON dp.deal_id__deals_t = d.deal_id
+      AND dp.is_deleted = 0
+LEFT JOIN parties_t p
+       ON p.party_id = dp.party_id__parties_t
+      AND p.is_deleted = 0
+LEFT JOIN deal_tags_t dt
+    ON d.deal_id = dt.deal_id__deals_t
+    AND dt.is_deleted = 0
+LEFT JOIN stella_common.template_deal_tags_t tdt
+    ON tdt.tag_id = dt.keyword_id__template_keywords_t
+    AND tdt.is_deleted = 0
 
 WHERE d.is_deleted = 0
-
-
-
+GROUP BY d.deal_id
