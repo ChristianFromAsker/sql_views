@@ -1,4 +1,4 @@
-CREATE VIEW deals_v AS
+CREATE OR REPLACE VIEW deals_v AS
 SELECT
     d.deal_id
 
@@ -22,7 +22,6 @@ SELECT
     , d.currency_date
     , d.currency_rate_deal
     , d.currency_rate_local
-
 
     , d.deal_name
     , d.deal_status_id
@@ -63,17 +62,11 @@ SELECT
     , d.submission_limits
     , d.submission_notes
 
-    , d.target_legal_name
-    , d.TargetDomicile
-    , d.target_business_name
     , d.target_desc
     , sup_s.sector_name target_super_sector
     , d.target_super_sector_id
     , d.target_sub_sector_id
     , sub_s.sector_name target_sub_sector
-    , tlj.jurisdiction target_legal_jurisdiction
-    , d.target_main_jurisdiction_id
-    , tmj.jurisdiction target_main_jurisdiction
 
     , d.uw_progress
     , d.uw_progress_latest_change
@@ -92,20 +85,14 @@ SELECT
 
     , d.submission_date
 
-    , d.insured_legal_name
     , d.insured_registered_country_id
     , irc.jurisdiction insured_registered_country
     , d.insured_main_region_id
-    , d.buyer_business_name
-    , d.UltimateBuyer
-    , d.BuyerDomicile
+
     , d.buyer_financial_firm_id
     , d.buyer_law_firm_1_id
     , d.buyer_law_firm_2_id
 
-    , d.seller_business_name
-    , d.UltimateSeller
-    , d.SellerDomicile
     , d.SellerLegalFirm
 
     , d.IsClosed
@@ -115,7 +102,6 @@ SELECT
     , d.VDRReceived
     , d.VDRPassword
     , d.PremiumReceived
-
 
     , d.deal_currency
     , d.program_limit
@@ -138,7 +124,6 @@ SELECT
     , bh.months_before_auto_archiving
     , slf.FirmName seller_law_firm_hr
     , blf1.FirmName buyer_law_firm_1_hr
-    , blf2.FirmName buyer_law_firm_2_hr
 
     , d.rr_done
     , d.are_emails_filed_id
@@ -147,6 +132,23 @@ SELECT
 
     , wq.menu_item was_quoted
     , d.was_quoted_id
+
+-- to be deleted
+    , blf2.FirmName buyer_law_firm_2_hr
+    , d.seller_business_name
+    , d.UltimateSeller
+    , d.SellerDomicile
+    , d.insured_legal_name
+    , d.buyer_business_name
+    , d.UltimateBuyer
+    , d.BuyerDomicile
+    , d.target_legal_name
+    , d.TargetDomicile
+    , d.target_business_name
+    , tlj.jurisdiction target_legal_jurisdiction
+    , d.target_main_jurisdiction_id
+    , tmj.jurisdiction target_main_jurisdiction
+-- end to be deleted
 
 FROM
     deals_t d
