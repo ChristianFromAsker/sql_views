@@ -12,7 +12,7 @@ SELECT
     , d.broker_person 		broker_person_id
     , bh.entity_business_name 		budget_home
     , d.budget_home_id
-    , d.BuyerDomicile
+
     , d.buyer_law_firm_1_id
     , blf1.FirmName     buyer_law_firm_1
     , d.buyer_law_firm_2_id
@@ -47,12 +47,12 @@ SELECT
         DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 1 THEN p.party_business_name END
         ORDER BY p.party_business_name SEPARATOR '; '
     ) AS insured_business_names
-    , d.insured_legal_name
     , GROUP_CONCAT(
         DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 1 THEN p.party_registered_country_id__jurisdictions_t END
         ORDER BY p.party_registered_country_id__jurisdictions_t SEPARATOR '; '
     ) AS insured_registered_country_ids
     , irc.Jurisdiction      insured_registered_country
+    , d.insured_registered_country_id
     , iscd.menu_item is_sanction_checks_done
 
     , d.lowest_rp_attpoint
@@ -136,7 +136,8 @@ SELECT
     , d.target_business_name
     , d.target_legal_name
     , tlj.jurisdiction      target_legal_jurisdiction
-    , d.insured_registered_country_id
+    , d.BuyerDomicile
+    , d.insured_legal_name
     -- end to be removed
 
 FROM deals_t d
