@@ -1,4 +1,4 @@
-CREATE VIEW global_policy_list_eur_v AS
+CREATE OR REPLACE VIEW global_policy_list_local_v AS
 SELECT
     p.id
     , p.id policy_id
@@ -109,12 +109,12 @@ SELECT
     , CAST(d.ev / d.currency_rate_deal AS DECIMAL(14,0))                            ev_eur
     , CAST(d.ev / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0))   ev_usd
 
-FROM stella_eur.layers_t p
+FROM layers_t p
 LEFT JOIN
-    stella_eur.deals_t d
+    deals_t d
     ON p.deal_id = d.deal_id
 LEFT JOIN
-    stella_eur.broker_firms_t bf
+    broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
 LEFT JOIN
     stella_common.deal_statuses_t ds
