@@ -1,15 +1,8 @@
-/*
-Continent specific tables_
-    deals_t
-    layers_t
-    broker_firms_t
-*/
-
-CREATE VIEW global_deal_list_eur_v AS
+CREATE OR REPLACE VIEW global_deal_list_local_v AS
 
 WITH policy_count AS (
   	SELECT p.deal_id, COUNT(p.id) policy_count
-  	FROM stella_eur.layers_t p
+  	FROM layers_t p
   	WHERE p.is_deleted = 0 AND p.rp_on_layer = 93
   	GROUP BY p.deal_id
 )
@@ -101,9 +94,9 @@ SELECT
     , CAST((d.uw_fee_amount  - d.counsel_fee_amount) / currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) 	uw_fee_we_keep_usd
 
 FROM
-    stella_eur.deals_t d
+    deals_t d
 LEFT JOIN
-    stella_eur.broker_firms_t bf
+    broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
 LEFT JOIN
     policy_count pce

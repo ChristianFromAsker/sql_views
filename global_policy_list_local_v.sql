@@ -27,6 +27,9 @@ SELECT
     , p.issuing_entity_id
     , d.insured_registered_country_id
     , irc.jurisdiction insured_registered_country
+    , p.insured
+    , i.party_business_name insured_business_name
+    , i.party_legal_name insured_legal_name
 
     , IF(
         p.layer_no = 0
@@ -167,7 +170,8 @@ LEFT JOIN
 LEFT JOIN
 	stella_common.jurisdictions_t slr
     ON sl.rp_region_id = slr.jurisdiction_id
-
+LEFT JOIN parties_t i
+    ON p.insured = i.party_id
 WHERE
     p.rp_on_layer = 93
     AND p.is_deleted = 0
