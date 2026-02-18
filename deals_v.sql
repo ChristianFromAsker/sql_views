@@ -12,6 +12,10 @@ SELECT
     , d.budget_home_id
     , br.jurisdiction budget_region
     , bh.budget_region_id__jurisdictions_t budget_region_id
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 2 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS buyer_business_names
 
     , d.closing_date
     , d.Comments
@@ -62,6 +66,10 @@ SELECT
     , d.submission_limits
     , d.submission_notes
 
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 4 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS target_business_names
     , d.target_desc
     , sup_s.sector_name target_super_sector
     , d.target_super_sector_id
@@ -220,4 +228,11 @@ LEFT JOIN stella_common.sectors_t sub_s
     ON d.target_sub_sector_id = sub_s.sector_id
 LEFT JOIN stella_common.jurisdictions_t tlj
     ON d.TargetDomicile = tlj.jurisdiction_id
+LEFT JOIN deal_parties_t dp
+    ON dp.deal_id__deals_t = d.deal_id
+    AND dp.is_deleted = 0
+LEFT JOIN parties_t p
+    ON p.party_id = dp.party_id__parties_t
+    AND p.is_deleted = 0
 WHERE d.is_deleted = 0
+GROUP BY d.deal_id
