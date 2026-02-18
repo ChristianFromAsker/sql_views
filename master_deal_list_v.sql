@@ -104,6 +104,7 @@ SELECT
     ) AS target_business_names
     , d.target_desc
     , sup_s.sector_name     target_super_sector
+    , sup_s.sector_name     target_super_sector_name
     , d.target_sub_sector_id
     , sub_s.sector_name     target_sub_sector
     , d.target_super_sector_id
