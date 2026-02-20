@@ -1,4 +1,9 @@
 
+
+
+-- 20 February 2026
+-- ALTER TABLE parties_t ALTER COLUMN party_main_region_id__jurisdictions_t SET DEFAULT 442;
+
 -- 19 February 2026
 -- ALTER TABLE parties_t ADD party_main_country_id__jurisdictions_t INTEGER AFTER party_legal_name
 
