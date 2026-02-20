@@ -29,6 +29,8 @@ SELECT
     ) display_view
 
     , l.insured insured_id
+    , i.party_main_region_id__jurisdictions_t insured_main_region_id
+    , imr.jurisdiction insured_main_region_name
     , i.party_business_name insured_name
     , i.party_registered_country_id__jurisdictions_t    insured_registered_country_id
     , irj.jurisdiction                                  insured_registered_country_name
@@ -88,6 +90,8 @@ LEFT JOIN deals_t d
     ON l.deal_id = d.deal_id
 LEFT JOIN parties_t i
     ON l.insured = i.party_id
+LEFT JOIN stella_common.jurisdictions_t imr
+    ON i.party_main_region_id__jurisdictions_t = imr.jurisdiction_id
 LEFT JOIN stella_common.budget_homes_t bh
     ON l.budget_home_id = bh.budget_home_id
 LEFT JOIN stella_common.entities_t ie
