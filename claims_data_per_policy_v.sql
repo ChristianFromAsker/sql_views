@@ -43,7 +43,8 @@ SELECT l.id policy_id
     , c.relevant_exclusion_4
     , c.relevant_exclusion_4 RelevantExclusion4
     , FORMAT(d.retention / d.currency_rate_deal,0) AS retention_eur
-
+    , d.risk_type_id
+    , rt.risk_type_name
     , d.secondary_uw second_uw_id
     , s_uw.uw_name second_uw_full_name
     , d.spa_law
@@ -150,7 +151,8 @@ LEFT JOIN parties_t i
     ON l.insured = i.party_id
 LEFT JOIN stella_common.jurisdictions_t ij
     ON i.party_registered_country_id__jurisdictions_t = ij.jurisdiction_id
-
+LEFT JOIN stella_common.risk_types_t rt
+    ON d.risk_type_id = rt.risk_type_id
 WHERE
     c.is_deleted = 0
     AND l.is_deleted = 0
