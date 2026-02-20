@@ -12,6 +12,7 @@ SELECT
     p.party_business_name,
     p.party_city,
     p.party_legal_name,
+    p.party_main_country_id__jurisdictions_t party_main_country_id,
     p.party_main_region_id__jurisdictions_t party_main_region_id,
     p.party_reg_no,
     j.jurisdiction                                  party_registered_country,
