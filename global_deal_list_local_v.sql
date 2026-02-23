@@ -5,6 +5,23 @@ WITH policy_count AS (
   	FROM layers_t p
   	WHERE p.is_deleted = 0 AND p.rp_on_layer = 93
   	GROUP BY p.deal_id
+),
+
+buyer_business_names AS (
+    SELECT
+        dp.deal_id__deals_t AS deal_id,
+        GROUP_CONCAT(
+            DISTINCT CASE
+                WHEN dp.deal_role_id__deal_roles_t = 1 THEN p.party_business_name
+            END
+            ORDER BY p.party_business_name SEPARATOR '; '
+        ) AS buyer_business_names
+    FROM deal_parties_t dp
+    JOIN parties_t p
+        ON p.party_id = dp.party_id__parties_t
+       AND p.is_deleted = 0
+    WHERE dp.is_deleted = 0
+    GROUP BY dp.deal_id__deals_t
 )
 
 SELECT
@@ -17,6 +34,8 @@ SELECT
     , d.budget_home_id
     , br.jurisdiction 		budget_region
     , br.jurisdiction_id	budget_region_id
+    , buyer_business_names
+    , CONCAT_WS(', ', blf1.FirmName, blf2.FirmName) buyer_law_firm_names
 
     , d.closing_date
     , CAST(d.counsel_fee_amount / d.currency_rate_deal AS DECIMAL(14,0)) 	counsel_fee_amount_eur
@@ -95,9 +114,12 @@ SELECT
 
 FROM
     deals_t d
-LEFT JOIN
-    broker_firms_t bf
+LEFT JOIN broker_firms_t bf
     ON d.broker_firm_id = bf.broker_firm_id
+LEFT JOIN law_firms_t blf1
+    ON d.buyer_law_firm_1_id = blf1.law_firm_id
+LEFT JOIN law_firms_t blf2
+    ON d.buyer_law_firm_2_id = blf2.law_firm_id
 LEFT JOIN
     policy_count pce
     ON d.deal_id = pce.deal_id
@@ -153,5 +175,5 @@ LEFT JOIN stella_common.underwriters_t p_uw
     ON d.primary_uw = p_uw.uw_id
 LEFT JOIN stella_common.underwriters_t s_uw
     ON d.secondary_uw = s_uw.uw_id
-
+LEFT JOIN buyer_business_names bbn ON d.deal_id = bbn.deal_id
 WHERE d.is_deleted = 0 AND d.is_test_deal_id = 94
