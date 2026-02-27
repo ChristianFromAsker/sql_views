@@ -2,71 +2,72 @@
 
 CREATE OR REPLACE VIEW power_bi_data_local_v AS
 SELECT
-d.deal_id
-, d.deal_name
-, ds.menu_item deal_status
+    d.deal_id
+    , d.deal_name
+    , ds.menu_item deal_status
 
-, d.spa_law
-, bf.business_name broker_firm
-, d.inception_date
-, d.uw_fee_received_date
+    , d.spa_law
+    , bf.business_name broker_firm
+    , d.inception_date
+    , d.uw_fee_received_date
 
-, pox.menu_item primary_or_xs
-, risk_type.risk_type_name risk_type
-, bh.budget_home_name budget_home
-, br.jurisdiction budget_region
-, d.create_date
+    , pox.menu_item primary_or_xs
+    , risk_type.risk_type_name risk_type
+    , bh.budget_home_name budget_home
+    , br.jurisdiction budget_region
+    , d.create_date
 
-, d.submission_date
-, d.deal_name navins_home
-, qd.menu_item was_quoted
-, sup_s.sector_name target_super_sector
-, sub_s.sector_name target_sub_sector
+    , d.submission_date
 
-, tlj.jurisdiction target_legal_jurisdiction
-, irj.jurisdiction insured_registered_jurisdiction
+    , d.deal_name navins_home
+    , qd.menu_item was_quoted
+    , sup_s.sector_name target_super_sector
+    , sub_s.sector_name target_sub_sector
 
-, d.deal_currency
-, CAST(total_rp_premium_on_deal / currency_rate_deal AS DECIMAL(14,0)) total_rp_premium_on_deal_eur
-, CAST(ev / currency_rate_deal AS DECIMAL(14,0)) ev_eur
-, CAST(total_rp_limit_on_deal / currency_rate_deal AS DECIMAL(14,0)) total_rp_limit_on_deal_eur
-, CAST(lowest_rp_attpoint / currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
-, CAST(d.retention / d.currency_rate_deal AS DECIMAL(14,0)) retention_eur
-, CAST((d.uw_fee_amount - d.counsel_fee_amount) / d.currency_rate_deal AS DECIMAL(14,0)) uw_fee_for_rp_eur
-, rtm.risk_type_name risk_type_major
-, bc.jurisdiction budget_continent
+    , tlj.jurisdiction target_legal_jurisdiction
+    , irj.jurisdiction insured_registered_jurisdiction
 
-, CAST(total_rp_premium_on_deal / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) total_rp_premium_on_deal_usd
-, CAST(total_rp_limit_on_deal / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) total_rp_limit_on_deal_usd
-, CAST(ev / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) ev_usd
+    , d.deal_currency
+    , CAST(total_rp_premium_on_deal / currency_rate_deal AS DECIMAL(14,0)) total_rp_premium_on_deal_eur
+    , CAST(ev / currency_rate_deal AS DECIMAL(14,0)) ev_eur
+    , CAST(total_rp_limit_on_deal / currency_rate_deal AS DECIMAL(14,0)) total_rp_limit_on_deal_eur
+    , CAST(lowest_rp_attpoint / currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
+    , CAST(d.retention / d.currency_rate_deal AS DECIMAL(14,0)) retention_eur
+    , CAST((d.uw_fee_amount - d.counsel_fee_amount) / d.currency_rate_deal AS DECIMAL(14,0)) uw_fee_for_rp_eur
+    , rtm.risk_type_name risk_type_major
+    , bc.jurisdiction budget_continent
 
-, slf.FirmName seller_law_firm
-, blf1.FirmName buyer_law_firm_1
-, blf2.FirmName buyer_law_firm_2
-, pds.menu_item parent_deal_status
-, CASE
-WHEN bc.jurisdiction = 'America' THEN
-	CASE
-        WHEN
-        	d.deal_status_id = 4
-            OR d.deal_status_id = 5
-            OR d.deal_status_id = 6
-            OR d.deal_status_id = 436
-            THEN 'yes'
-        ELSE 'no'
-    END
-ELSE
-   	CASE
-		WHEN
-        	d.deal_status_id = 3
-            OR d.deal_status_id = 4
-            OR d.deal_status_id = 5
-            OR d.deal_status_id = 6
-            OR d.deal_status_id = 436
-            THEN 'yes'
-        ELSE 'no'
-    END
-END COLLATE utf8mb4_0900_ai_ci AS is_won
+    , CAST(total_rp_premium_on_deal / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) total_rp_premium_on_deal_usd
+    , CAST(total_rp_limit_on_deal / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) total_rp_limit_on_deal_usd
+    , CAST(ev / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) ev_usd
+
+    , slf.FirmName seller_law_firm
+    , blf1.FirmName buyer_law_firm_1
+    , blf2.FirmName buyer_law_firm_2
+    , pds.menu_item parent_deal_status
+    , CASE WHEN bc.jurisdiction = 'America' THEN
+        CASE
+            WHEN
+                d.deal_status_id = 4
+                OR d.deal_status_id = 5
+                OR d.deal_status_id = 6
+                OR d.deal_status_id = 436
+                THEN 'yes'
+            ELSE 'no'
+        END
+    ELSE
+        CASE
+            WHEN
+                d.deal_status_id = 3
+                OR d.deal_status_id = 4
+                OR d.deal_status_id = 5
+                OR d.deal_status_id = 6
+                OR d.deal_status_id = 436
+                THEN 'yes'
+            ELSE 'no'
+        END
+    END COLLATE utf8mb4_0900_ai_ci AS is_won
+, CAST((d.uw_fee_amount - d.counsel_fee_amount) / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) uw_fee_for_rp_usd
 
 FROM deals_t d
 LEFT JOIN stella_common.budget_homes_t bh
