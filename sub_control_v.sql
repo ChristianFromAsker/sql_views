@@ -1,17 +1,34 @@
 CREATE OR REPLACE VIEW sub_control_v AS
 SELECT
     d.deal_id
+    , d.broker_firm_id
+
     , d.deal_name
     , d.deal_status_id
     , d.budget_home_id
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 2 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS buyer_business_names
+
     , d.deal_currency
     , d.ev
     , d.insured_registered_country_id
-    , d.spa_law
     , d.key_financials
+
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 5 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS seller_business_names
+    , d.spa_law
+
     , d.target_business_name
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 4 THEN p.party_business_name END
+        ORDER BY p.party_business_name SEPARATOR '; '
+    ) AS target_business_names
     , d.target_legal_name
-    , d.broker_firm_id
+
     , d.primary_or_xs_id
     , d.transaction_style
     , d.target_super_sector_id
@@ -114,9 +131,15 @@ LEFT JOIN
 LEFT JOIN
     stella_common.jurisdictions_t tlj
     ON d.TargetDomicile = tlj.jurisdiction_id
-
+LEFT JOIN deal_parties_t dp
+    ON dp.deal_id__deals_t = d.deal_id
+    AND dp.is_deleted = 0
+LEFT JOIN parties_t p
+    ON p.party_id = dp.party_id__parties_t
+    AND p.is_deleted = 0
 WHERE
     d.is_deleted = 0
     AND (NOT d.deal_status_id = 6 OR NOT d.deal_status_id = 436)
     AND d.create_date_year > (YEAR(NOW()) - 3)
-    AND d.is_test_deal_id = 94;
+    AND d.is_test_deal_id = 94
+GROUP BY d.deal_id
