@@ -1,13 +1,31 @@
 CREATE OR REPLACE VIEW global_policy_list_local_v AS
+
+WITH buyer_business_names AS (
+    SELECT
+        dp.deal_id__deals_t AS deal_id,
+        GROUP_CONCAT(
+            DISTINCT CASE
+                WHEN dp.deal_role_id__deal_roles_t = 2 THEN p.party_business_name
+            END
+            ORDER BY p.party_business_name SEPARATOR '; '
+        ) AS buyer_business_names
+    FROM deal_parties_t dp
+    JOIN parties_t p
+        ON p.party_id = dp.party_id__parties_t
+       AND p.is_deleted = 0
+    WHERE dp.is_deleted = 0
+    GROUP BY dp.deal_id__deals_t
+)
+
 SELECT
     p.id
+    , buyer_business_names
     , p.id policy_id
 
     , p.broker_commission
     , bf.business_name broker_firm
     , d.budget_home_id
     , d.broker_firm_id
-    , d.buyer_business_name
 
     , d.closing_date
     , d.create_date
@@ -172,6 +190,8 @@ LEFT JOIN
     ON sl.rp_region_id = slr.jurisdiction_id
 LEFT JOIN parties_t i
     ON p.insured = i.party_id
+LEFT JOIN buyer_business_names bbn
+    ON d.deal_id = bbn.deal_id
 WHERE
     p.rp_on_layer = 93
     AND p.is_deleted = 0
