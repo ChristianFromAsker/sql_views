@@ -55,6 +55,7 @@ SELECT
         , 'XS'
     ) layer_group
     , p.layer_limit
+    , CAST(p.layer_limit / d.currency_rate_deal AS DECIMAL(15,0)) layer_limit_eur
     , p.layer_no
 
     , navins.navins_home navins_home
