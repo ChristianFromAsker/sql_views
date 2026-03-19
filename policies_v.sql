@@ -15,6 +15,7 @@ SELECT
     l.id
     , l.id policy_id
 
+    , bh.budget_home_name budget_home
     , l.budget_home_id
 
     , l.create_date
@@ -37,18 +38,19 @@ SELECT
     , ie.entity_business_name 	issuing_entity
     , l.issuing_entity_id
 
+    , l.layer_limit
     , l.layer_no
 
     , nh.navins_home
     , l.navins_home_id
 
     , d.risk_type_id
-    , bh.budget_home_name budget_home
 
-    , d.budget_home_id temp_budget_home
+    , d.budget_home_id budget_home_deal
 
     , lt.layer_text layer_no_text
 
+    , l.policy_name
     , IF(l.policy_no IS NOT NULL, l.policy_no,
  	    IF(l.rp_on_layer = 94, 'n/a', l.stella_policy_no)
     ) policy_no
@@ -62,14 +64,13 @@ SELECT
         , l.stella_policy_no
     ) stella_policy_no
 
-    , l.policy_name
-
     , CAST(l.quota * l.layer_limit AS DECIMAL(14,0)) policy_limit
     , CAST(l.quota * l.layer_limit / d.currency_rate_deal AS DECIMAL(14,0)) policy_limit_eur
 
-    , l.underlying_limit
     , l.quota
-    , l.layer_limit
+
+    , l.underlying_limit
+
     , l.rp_on_layer
     , ro.menu_item rp_on_layer_hr
     , l.broker_commission
