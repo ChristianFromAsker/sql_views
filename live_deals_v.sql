@@ -67,6 +67,8 @@ SELECT
         , '\r\n', IFNULL(s_uw.uw_initials, '')
     ) 	roles
 
+    , scd.menu_item sanction_checks_done
+    , d.sanction_checks_done sanction_checks_done_id
     , d.spa_law
     , IF(
         d.nbi_prepper IS NULL,
@@ -161,6 +163,8 @@ LEFT JOIN deal_parties_t dp
 LEFT JOIN parties_t p
     ON p.party_id = dp.party_id__parties_t
     AND p.is_deleted = 0
+LEFT JOIN stella_common.menu_list_t scd
+    ON d.sanction_checks_done = scd.menu_id
 WHERE
     d.is_deleted = 0
     AND d.is_test_deal_id = 94
