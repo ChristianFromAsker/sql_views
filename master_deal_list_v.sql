@@ -23,6 +23,11 @@ SELECT
         ORDER BY p.party_business_name SEPARATOR '; '
     ) AS buyer_business_names
 
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 2 THEN p.party_legal_name END
+        ORDER BY p.party_legal_name SEPARATOR '; '
+    ) AS buyer_legal_names
+
     , d.comments
     , d.create_date
     , d.currency_rate_deal
@@ -90,6 +95,11 @@ SELECT
         DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 5 THEN p.party_business_name END
         ORDER BY p.party_business_name SEPARATOR '; '
     ) AS seller_business_names
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 5 THEN p.party_legal_name END
+        ORDER BY p.party_legal_name SEPARATOR '; '
+    ) AS seller_legal_names
+
     , d.spa_law
     , stage.menu_item 		stage
     , d.submission_date
@@ -102,6 +112,11 @@ SELECT
         DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 4 THEN p.party_business_name END
         ORDER BY p.party_business_name SEPARATOR '; '
     ) AS target_business_names
+    , GROUP_CONCAT(
+        DISTINCT CASE WHEN dp.deal_role_id__deal_roles_t = 4 THEN p.party_legal_name END
+        ORDER BY p.party_legal_name SEPARATOR '; '
+    ) AS target_legal_names
+
     , d.target_desc
     , sup_s.sector_name     target_super_sector
     , sup_s.sector_name     target_super_sector_name
