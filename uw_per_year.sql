@@ -1,63 +1,9 @@
-
--- average limit per deal
-/*
-Set @input_year = 2025;
-SELECT
-    SUM(total_rp_limit_on_deal / currency_rate_deal) total_limit
-FROM
-    stella_us.deals_t
-WHERE
-    is_deleted = 0
-    AND deal_status_id IN(6, 436)
-    AND YEAR(inception_date) =  @input_year
--- */
-
-
--- FEES PER YEAR
-/*
-Set @input_year = 2025;
- SELECT
-    SUM((uw_fee_amount - counsel_fee_amount) / currency_rate_deal ) total_fees
-    , SUM(total_rp_limit_on_deal / currency_rate_deal) total_limit
-    , CAST(SUM(total_rp_premium_on_deal / currency_rate_deal) AS DECIMAL(15,0)) premium_formatted
- FROM
-    stella_us.deals_t
- WHERE
-    is_deleted = 0
-    AND deal_status_id IN(6, 436)
-    AND YEAR(inception_date) =  @input_year
- -- */
-
--- DEAL COUNT
-/*
-SELECT
-    COUNT(d.deal_id)
-FROM
-    stella_us.deals_t d
-WHERE
-    d.deal_status_id IN(6,436)
-    AND YEAR(d.inception_date) = 2025
--- */
-
-
--- POLICY COUNT
-/*
-SELECT
-    count(p.policy_id)
-FROM
-    stella_us.policies_v p
-WHERE
-    p.deal_status_id IN(6,436)
-    AND YEAR(p.inception_date) = 2025
--- */
-
-
 -- TOTAL FTES PER YEAR
--- /*
 Set @input_year = 2025;
 
 SELECT
-  SUM(fte_portion) AS total_fte_portion
+  -- SUM(fte_portion) AS total_fte_portion
+     *
 FROM (
     SELECT uws.uw_id
        , uws.uw_name
@@ -110,9 +56,11 @@ LEFT JOIN stella_common.menu_list_t isdt
     ON uws.is_super_duper_trusted_id = isdt.menu_id
 WHERE
     uws.is_deleted = 0
-    -- AND bc.jurisdiction = 'North America'
+    AND uws.budget_home_id <> 93
+    AND uws.is_employed_id = 93
     AND user_type_id IN (149, 150, 620)
 ) as sub
+ORDER BY uw_name
 -- */
 
 
