@@ -175,5 +175,6 @@ LEFT JOIN stella_common.underwriters_t p_uw
     ON d.primary_uw = p_uw.uw_id
 LEFT JOIN stella_common.underwriters_t s_uw
     ON d.secondary_uw = s_uw.uw_id
-LEFT JOIN buyer_business_names bbn ON d.deal_id = bbn.deal_id
+LEFT JOIN buyer_business_names bbn
+    ON d.deal_id = bbn.deal_id
 WHERE d.is_deleted = 0 AND d.is_test_deal_id = 94
