@@ -1,4 +1,4 @@
-CREATE VIEW risk_details_f_v AS
+CREATE OR REPLACE VIEW risk_details_f_v AS
 SELECT d.deal_id
 
     , d.analyst_id
