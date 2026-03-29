@@ -19,7 +19,14 @@ SELECT
 
     , d.submission_date
 
-    , d.deal_name navins_home
+    , COALESCE(
+      GROUP_CONCAT(
+        DISTINCT nh.entity_business_name
+        ORDER BY nh.entity_business_name
+        SEPARATOR ', '
+      ),
+      NULL
+    ) AS navins_homes
     , qd.menu_item was_quoted
     , sup_s.sector_name target_super_sector
     , sub_s.sector_name target_sub_sector
@@ -104,8 +111,14 @@ LEFT JOIN law_firms_t blf2
     ON d.buyer_law_firm_2_id = blf2.law_firm_id
 LEFT JOIN law_firms_t slf
     ON d.SellerLegalFirm = slf.law_firm_id
+LEFT JOIN layers_t AS l
+    ON l.deal_id = d.deal_id
+    AND l.issuing_entity_id IS NOT NULL
+LEFT JOIN stella_common.entities_t AS nh
+    ON l.issuing_entity_id = nh.entity_id
 WHERE
     d.is_deleted = 0
     AND NOT d.deal_name IS NULL
     AND NOT d.broker_firm_id IS NULL
     AND d.is_test_deal_id = 94
+GROUP BY deal_id;
