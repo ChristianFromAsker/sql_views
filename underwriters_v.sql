@@ -1,25 +1,4 @@
--- To get FTEs for a year, with a fraction for leavers or joiners during the year, use:
-
-Set @input_year = [desired year];
-
-, ROUND(
-    GREATEST(
-        0
-        , LEAST(
-            DATEDIFF(
-                LEAST(
-                    COALESCE(end_date, MAKEDATE(@input_year + 1, 1) - INTERVAL 1 DAY)
-                    , MAKEDATE(@input_year + 1, 1) - INTERVAL 1 DAY)
-                    , GREATEST(start_date, MAKEDATE(@input_year, 1
-                )
-            ) + 1
-            , 365
-        )
-    ) / 365
-    , 2
-) fte_portion
-
--- CREATE VIEW underwriters_v AS
+CREATE OR REPLACE VIEW stella_common.underwriters_v AS
 SELECT uws.uw_id
 
 , bc.jurisdiction 		budget_continent
@@ -38,7 +17,7 @@ SELECT uws.uw_id
 
 , uws.nickname
 , uws.personalised_stella
-
+, '' employee_role_start_date
 , uws.start_date
 , uws.user_name
 , uws.user_type_id 		user_type
