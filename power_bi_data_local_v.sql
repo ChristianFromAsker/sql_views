@@ -74,8 +74,13 @@ SELECT
             ELSE 'no'
         END
     END COLLATE utf8mb4_0900_ai_ci AS is_won
-, CAST((d.uw_fee_amount - d.counsel_fee_amount) / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) uw_fee_for_rp_usd
-
+    , CAST((d.uw_fee_amount - d.counsel_fee_amount) / d.currency_rate_deal * d.currency_rate_eurusd AS DECIMAL(14,0)) uw_fee_for_rp_usd
+    , d.nbi_prepper nbi_prepper_id
+    , np.uw_name nbi_prepper_name
+    , d.primary_uw primary_uw_id
+    , puw.uw_name primary_uw_name
+    , d.secondary_uw second_uw_id
+    , suw.uw_name second_uw_name
 FROM deals_t d
 LEFT JOIN stella_common.budget_homes_t bh
     ON d.budget_home_id = bh.budget_home_id
@@ -116,6 +121,12 @@ LEFT JOIN layers_t AS l
     AND l.issuing_entity_id IS NOT NULL
 LEFT JOIN stella_common.entities_t AS nh
     ON l.issuing_entity_id = nh.entity_id
+LEFT JOIN stella_common.underwriters_t np
+    ON d.nbi_prepper = np.uw_id
+LEFT JOIN stella_common.underwriters_t puw
+    ON d.primary_uw = puw.uw_id
+LEFT JOIN stella_common.underwriters_t suw
+    ON d.secondary_uw = suw.uw_id
 WHERE
     d.is_deleted = 0
     AND NOT d.deal_name IS NULL
