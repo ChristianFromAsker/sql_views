@@ -66,6 +66,7 @@ SELECT
     , d.max_limit_quoted
 
     , d.nbi_prepper 	nbi_prepper_id
+    , np.uw_name        nbi_prepper_name
     , IF(
         d.quote_due_time IS NULL
         , DATE_FORMAT(d.quote_due_date, '%a %b, %e/%y')
@@ -165,6 +166,8 @@ LEFT JOIN stella_common.jurisdictions_t br
 ON bh.budget_region_id = br.jurisdiction_id
 LEFT JOIN stella_common.menu_list_t ds
     ON d.deal_status_id = ds.menu_id
+LEFT JOIN stella_common.underwriters_t np
+    ON d.nbi_prepper = np.uw_id
 LEFT JOIN stella_common.menu_list_t pox
     ON d.primary_or_xs_id = pox.menu_id
 LEFT JOIN stella_common.menu_list_t stage
