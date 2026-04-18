@@ -1,4 +1,4 @@
-CREATE VIEW cm_referrals_v AS
+CREATE OR REPLACE VIEW cm_referrals_v AS
 SELECT r.id
     , r.id referral_id
     , cdq.deal_id
