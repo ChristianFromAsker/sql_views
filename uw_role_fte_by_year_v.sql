@@ -7,6 +7,7 @@ FROM (
     SELECT
         v.budget_continent_id,
         v.budget_continent_name,
+        v.budget_region_id,
         v.budget_home_id,
         v.budget_home_name,
         v.email,
