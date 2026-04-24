@@ -61,7 +61,9 @@ SELECT
     , iscd.menu_item is_sanction_checks_done
 
     , d.lowest_rp_attpoint
-    , CAST(lowest_rp_attpoint / currency_rate_deal AS DECIMAL(14,0)) lowest_rp_attpoint_eur
+    , CONCAT(
+        FORMAT(lowest_rp_attpoint / currency_rate_deal,0), '<br>', FORMAT(d.program_limit /  d.currency_rate_deal,0)
+    ) lowest_rp_attpoint_eur
 
     , d.max_limit_quoted
 
@@ -78,6 +80,7 @@ SELECT
     , d.primary_uw 		primary_uw_id
     , uw.uw_initials 	primary_uw_initials
     , d.program_limit
+    , CAST(d.program_limit /  d.currency_rate_deal AS DECIMAL(14,0)) program_limit_eur
     , d.program_summary
 
     , d.quote_due_time
