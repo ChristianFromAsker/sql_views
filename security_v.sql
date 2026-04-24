@@ -103,7 +103,8 @@ LEFT JOIN deals_t deals ON l.deal_id = deals.deal_id
 LEFT JOIN stella_common.menu_list_t rs ON s.referral_status_id = rs.menu_id
 LEFT JOIN stella_common.menu_list_t op ON s.on_policy_id = op.menu_id
 LEFT JOIN stella_common.menu_list_t bc ON s.binder_compliant_id = bc.menu_id
-LEFT JOIN stella_common.insurers_t i ON i.id = b.insurer_id
+LEFT JOIN stella_common.insurers_t i
+    ON i.id = b.insurer_id
 LEFT JOIN stella_common.cm_binder_limits_t bl ON s.max_limit_id = bl.id
 LEFT JOIN
     stella_common.brands_t brands

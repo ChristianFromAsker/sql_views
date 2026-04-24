@@ -6,6 +6,8 @@ SELECT
     bc.jurisdiction budget_continent_name,
     u.budget_home_id,
     bh.budget_home_name,
+    br.jurisdiction_id budget_region_id,
+    br.jurisdiction budget_region,
 
     u.can_change_budget_home_id,
     cbh.menu_item can_change_budget_home,
@@ -42,6 +44,8 @@ LEFT JOIN stella_common.employee_roles_t p
   ON p.employee_role_id = r.parent_employee_role_id
 LEFT JOIN stella_common.budget_homes_t bh
     ON u.budget_home_id = bh.budget_home_id
+LEFT JOIN stella_common.jurisdictions_t br
+    ON bh.budget_region_id__jurisdictions_t = br.jurisdiction_id
 LEFT JOIN stella_common.jurisdictions_t bc
     ON bh.budget_continent_id__jurisdictions_t = bc.jurisdiction_id
 LEFT JOIN stella_common.menu_list_t ut

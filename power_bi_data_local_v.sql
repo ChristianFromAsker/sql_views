@@ -81,6 +81,8 @@ SELECT
     , puw.uw_name primary_uw_name
     , d.secondary_uw second_uw_id
     , suw.uw_name second_uw_name
+    , CAST(d.retention / d.currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) retention_usd
+    , CAST(lowest_rp_attpoint / currency_rate_deal * currency_rate_eurusd AS DECIMAL(14,0)) lowest_rp_attpoint_usd
 FROM deals_t d
 LEFT JOIN stella_common.budget_homes_t bh
     ON d.budget_home_id = bh.budget_home_id
