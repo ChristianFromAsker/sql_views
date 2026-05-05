@@ -1,4 +1,4 @@
-CREATE VIEW security_v AS
+CREATE OR REPLACE VIEW security_v AS
 SELECT
     s.id
     , s.id security_id
@@ -41,7 +41,7 @@ SELECT
         IF (
         s.max_limit_currency_to_deal_currency_fx = 1
         , bl.limit_amount + IFNULL(edl.extra_limit, 0)
-        , ROUND(96 / 100 * bl.limit_amount * s.max_limit_currency_to_deal_currency_fx, -3)  + IFNULL(edl.extra_limit, 0)
+        , ROUND((1-deals.fx_buffer) * bl.limit_amount * s.max_limit_currency_to_deal_currency_fx, -3)  + IFNULL(edl.extra_limit, 0)
         )
     AS DECIMAL(14,0)) max_limit_deal_currency
 
@@ -57,7 +57,7 @@ SELECT
         IF (
         s.max_limit_currency_to_deal_currency_fx = 1,
         b.reference_limit + IFNULL(edl.extra_limit, 0),
-        ROUND(96 / 100 * b.reference_limit * s.max_limit_currency_to_deal_currency_fx, -3) + IFNULL(edl.extra_limit, 0)
+        ROUND((1-deals.fx_buffer) * b.reference_limit * s.max_limit_currency_to_deal_currency_fx, -3) + IFNULL(edl.extra_limit, 0)
         )
     AS DECIMAL(14,0)) reference_limit_deal_currency
 
@@ -97,9 +97,12 @@ SELECT
     , l.underlying_limit
 FROM
     security_t s
-LEFT JOIN stella_common.binders_t b ON s.binder_id = b.binder_id
-LEFT JOIN layers_t l ON s.policy_id = l.id
-LEFT JOIN deals_t deals ON l.deal_id = deals.deal_id
+LEFT JOIN stella_common.binders_t b
+    ON s.binder_id = b.binder_id
+LEFT JOIN layers_t l
+    ON s.policy_id = l.id
+LEFT JOIN deals_t deals
+    ON l.deal_id = deals.deal_id
 LEFT JOIN stella_common.menu_list_t rs ON s.referral_status_id = rs.menu_id
 LEFT JOIN stella_common.menu_list_t op ON s.on_policy_id = op.menu_id
 LEFT JOIN stella_common.menu_list_t bc ON s.binder_compliant_id = bc.menu_id
