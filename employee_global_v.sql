@@ -52,6 +52,19 @@ LEFT JOIN stella_common.employee_roles_t r
 LEFT JOIN stella_common.employee_roles_t p
     ON p.employee_role_id = r.parent_employee_role_id
 
+
+LEFT JOIN stella_common.employee_product_links_t pl
+  ON u.uw_id = pl.uw_id__underwriters_t
+ AND pl.is_deleted = 0
+ AND (
+      l.employee_role_link_id IS NULL
+      OR (
+           pl.employee_product_start_date <= COALESCE(l.employee_role_end_date, '9999-12-31')
+       AND COALESCE(pl.employee_product_end_date, '9999-12-31') >= l.employee_role_start_date
+         )
+     )
+
+/*
 LEFT JOIN stella_common.employee_product_links_t pl
     ON u.uw_id = pl.uw_id__underwriters_t
     AND pl.is_deleted = 0
@@ -66,6 +79,8 @@ LEFT JOIN stella_common.employee_product_links_t pl
             AND COALESCE(pl.employee_product_end_date, '9999-12-31') >= l2.employee_role_start_date
         )
     )
+
+ */
 
 LEFT JOIN stella_common.employee_products_t pr
     ON pr.employee_product_id = pl.employee_product_id__employee_products_t
