@@ -21,6 +21,7 @@ FROM (
 
         v.parent_role_id,
         v.parent_role_name,
+        v.product_id,
         v.role_id,
         v.role_name,
         v.role_name_us,
@@ -59,7 +60,7 @@ FROM (
             ) + 1
         ) AS overlap_days
 
-    FROM stella_common.uw_all_roles_v v
+    FROM stella_common.employees_global_v v
     JOIN (
         SELECT
             cy.year,
